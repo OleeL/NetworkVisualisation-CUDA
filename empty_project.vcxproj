@@ -24,6 +24,7 @@
     <ProjectGuid>{2a43d317-3c8e-40ce-a704-9650f885deb8}</ProjectGuid>
     <RootNamespace>emptyproject</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>fyp_cuda_nodes</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

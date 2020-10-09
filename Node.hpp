@@ -5,6 +5,7 @@ class Node {
 	public:
 		double x;
 		double y;
+		int id;
 		int numConnectedNodes;
 		Node* connectedNodes;
 
@@ -15,12 +16,12 @@ class Node {
 		~Node();
 
 		/// <summary>
-		/// Node Constructor
+		/// Create a Node
 		/// </summary>
-		/// <param name="x">node coord x</param>
-		/// <param name="y">node coord y</param>
-		/// <param name="connectedNodes">array of connected nodes</param>
-		Node(const double x, const double y);
+		/// <param name="id">identify the node in undordered list</param>
+		/// <param name="x">coordinate</param>
+		/// <param name="y">coordinate</param>
+		Node(const int id, const double x, const double y);
 
 		/// <summary>
 		/// Prints the euclidean distance between 2 nodes
@@ -30,7 +31,9 @@ class Node {
 		/// <returns></returns>
 		double distance(const Node node1, const Node node2);
 
-		void setConnectedNodes(Node* connected, int numOfNodes);
+		void setConnectedNodes(Node* connected, const int numOfNodes);
 
-		static void printNodes(Node* nodes, const int numberOfNodes);
+		static void printNodes(Node nodes[], const int numOfNodes);
+
+		static void printNodesAndConnections(Node nodes[], const int numOfNodes);
 };
