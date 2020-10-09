@@ -5,26 +5,26 @@
 #include <math.h>
 
 void drawCircle(bool fill, GLfloat cx, GLfloat cy, GLfloat r, int n_seg) {
-
-    glEnable(GL_LINE_SMOOTH);
-    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-
-    if (fill) {
-        glBegin(GL_POLYGON);
-    }
-    else {
+    if (!fill) {
+        glEnable(GL_LINE_SMOOTH);
         glBegin(GL_LINE_LOOP);
-    }
 
-    for (int i = 0; i < n_seg; i++) {
-        GLfloat theta = 2.0f * 3.1415926f * i / n_seg; //get the current angle 
-        GLfloat x = r * cos(theta); //calculate the x component 
-        GLfloat y = r * sin(theta); //calculate the y component 
-        glVertex2f(x + cx, y + cy); //output vertex 
+        for (int i = 0; i < n_seg; i++) {
+            GLfloat theta = 2.0f * M_PI * i / n_seg; //get the current angle 
+            GLfloat x = r * cos(theta); //calculate the x component 
+            GLfloat y = r * sin(theta); //calculate the y component 
+            glVertex2f(x + cx, y + cy); //output vertex 
+        }
+        glEnd();
+        glDisable(GL_LINE_SMOOTH);
+        return;
     }
-
+    const GLvoid* p;
+    glPointSize(r);
+    glEnable(GL_POINT_SMOOTH);
+    glBegin(GL_POINTS);
+    glVertex2i(cx, cy);
     glEnd();
-    glDisable(GL_LINE_SMOOTH);
 }
 
 void rectangle(GLfloat x, GLfloat y, GLfloat w, GLfloat h) {
@@ -67,6 +67,7 @@ int DrawWindow(void)
 
     // Setting the window ready for drawing.
     glEnable(GL_BLEND);
+    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
     glLineWidth(0.5f);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity(); // Resets any previous projection matrices
@@ -79,7 +80,7 @@ int DrawWindow(void)
     glOrtho(0, width / aspect, height / aspect, 0.0, 0.0, 1.0);
 
     const auto segments = 64;
-    const auto r = 10;
+    const auto r = 15;
     const auto cx = width / 2;
     const auto cy = height / 2;
     const auto distance = 20;
@@ -90,9 +91,9 @@ int DrawWindow(void)
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
 
-        drawLine(cx - distance, cy, cx + distance, cy);
-        drawCircle(true, cx - distance, cy, r, segments);
-        drawCircle(true, cx + distance, cy, r, segments);
+        drawLine(cx - distance, cy - distance, cx + distance, cy + distance);
+        drawCircle(true, cx - distance, cy - distance, r, segments);
+        drawCircle(true, cx + distance, cy + distance, r, segments);
 
         /* Renders graphics to screen */
         glfwSwapBuffers(window);

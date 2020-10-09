@@ -14,25 +14,10 @@ inline void gpuAssert(cudaError_t code, const char* file, int line, bool abort =
 	if (abort) exit(code);
 }
 
-void printNodes(Node* nodes, const int numberOfNodes)
-{
-    for (auto i = 0; i < numberOfNodes; i++) {
-        std::cout 
-            << "("
-            << nodes[i].x
-            << ", "
-            << nodes[i].y
-            << ")"
-            << std::endl;
-    }
-    std::cout << std::endl;
-}
-
 int main(void)
 {
-    const auto numNodes = 2;
-    auto n1 = Node(-10, 0);
-    auto n2 = Node(0, 10);
+    auto n1 = Node(69, 100, 10);
+    auto n2 = Node(70, 200, 20);
 
     Node nc1[1] = { n2 };
     Node nc2[1] = { n1 };
@@ -40,8 +25,11 @@ int main(void)
     n1.setConnectedNodes(nc1, 1);
     n2.setConnectedNodes(nc2, 1);
 
-    Node nodes[numNodes] = { n1, n2 };
-    printNodes(nodes, numNodes);
+    const auto numNodes = 2;
+    Node nodes[] = { n1, n2 };
+
+    //Node::printNodes(nodes, numNodes);
+    Node::printNodesAndConnections(nodes, numNodes);
 
     DrawWindow();
 
