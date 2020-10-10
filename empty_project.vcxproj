@@ -155,11 +155,13 @@
     <CudaCompile Include="nodeUsage.cu" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Draw.hpp" />
     <ClInclude Include="window.hpp" />
     <ClInclude Include="main%28old%29.cu" />
     <ClInclude Include="Node.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Draw.cpp" />
     <ClCompile Include="window.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
