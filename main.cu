@@ -49,9 +49,8 @@ int main(void)
     //Node::printNodes(nodes, numNodes);
     Node::printNodesAndConnections(nodes, numNodes);
 
-    auto drawNodes = new Draw();
-    drawNodes->draw(nodes, numNodes);
-    delete drawNodes;
+    auto drawNodes = Draw();
+    drawNodes.draw(nodes, numNodes);
 
     return 0;
 }
