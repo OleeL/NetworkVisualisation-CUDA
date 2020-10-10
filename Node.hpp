@@ -31,7 +31,7 @@ class Node {
 		/// <returns></returns>
 		double distance(const Node node1, const Node node2);
 
-		void setConnectedNodes(Node* connected, const int numOfNodes);
+		void setConnectedNodes(Node connected[], const int numOfNodes);
 
 		static void printNodes(Node nodes[], const int numOfNodes);
 
