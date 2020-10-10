@@ -22,7 +22,7 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{2a43d317-3c8e-40ce-a704-9650f885deb8}</ProjectGuid>
-    <RootNamespace>emptyproject</RootNamespace>
+    <RootNamespace>fyp_cuda_nodes</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>fyp_cuda_nodes</ProjectName>
   </PropertyGroup>
@@ -155,11 +155,13 @@
     <CudaCompile Include="nodeUsage.cu" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Draw.hpp" />
     <ClInclude Include="window.hpp" />
     <ClInclude Include="main%28old%29.cu" />
     <ClInclude Include="Node.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Draw.cpp" />
     <ClCompile Include="window.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

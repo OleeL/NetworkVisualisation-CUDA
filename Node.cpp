@@ -41,9 +41,9 @@ void Node::printNodesAndConnections(Node nodes[], const int numOfNodes) {
 	for (auto i = 0; i < numOfNodes; i++) {
 		std::cout
 			<< nodes[i].id
-			<< " - (" 
+			<< " (" 
 			<< nodes[i].x << ", " << nodes[i].y
-			<< ") Connected to\t- ";
+			<< ") Connected to:\t";
 
 		for (auto j = 0; j < nodes[i].numConnectedNodes; j++) {
 			std::cout << nodes[i].connectedNodes[j].id << " ";

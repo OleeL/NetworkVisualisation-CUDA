@@ -1,73 +1,29 @@
 #include "window.hpp"
 #include <GLFW/glfw3.h>
 
-#define _USE_MATH_DEFINES
-#include <math.h>
-
-void drawCircle(bool fill, GLfloat cx, GLfloat cy, GLfloat r, int n_seg) {
-    if (!fill) {
-        glEnable(GL_LINE_SMOOTH);
-        glBegin(GL_LINE_LOOP);
-
-        for (int i = 0; i < n_seg; i++) {
-            GLfloat theta = 2.0f * M_PI * i / n_seg; //get the current angle 
-            GLfloat x = r * cos(theta); //calculate the x component 
-            GLfloat y = r * sin(theta); //calculate the y component 
-            glVertex2f(x + cx, y + cy); //output vertex 
-        }
-        glEnd();
-        glDisable(GL_LINE_SMOOTH);
-        return;
-    }
-    const GLvoid* p;
-    glPointSize(r);
-    glEnable(GL_POINT_SMOOTH);
-    glBegin(GL_POINTS);
-    glVertex2i(cx, cy);
-    glEnd();
-}
-
-void rectangle(GLfloat x, GLfloat y, GLfloat w, GLfloat h) {
-    glRectf(x, y, x + w, y + h);
-}
-
-void drawLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2)
+Window::Window(const char* windowName, const int width, const int height)
 {
-    glBegin(GL_LINES);
-    glVertex2f(x1, y1);
-    glVertex2f(x2, y2);
-    glEnd();
-}
-
-void setColour(GLfloat r, GLfloat g, GLfloat b, GLfloat a) {
-    glColor4f(r, g, b, a);
-}
-
-int DrawWindow(void)
-{
-    GLFWwindow* window;
-
     /* Initialize the library */
     if (!glfwInit())
-        return -1;
-
-    const auto width = 640;
-    const auto height = 480;
+        return;
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(width, height, "Hello World", NULL, NULL);
-    if (!window)
+    this->width = width;
+    this->height = height;
+    this->window = glfwCreateWindow(width, height, windowName, NULL, NULL);
+    if (!this->window)
     {
         glfwTerminate();
-        return -1;
+        return;
     }
 
     /* Make the window's context current */
-    glfwMakeContextCurrent(window);
+    glfwMakeContextCurrent(this->window);
 
     // Setting the window ready for drawing.
     glEnable(GL_BLEND);
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+    glfwWindowHint(GLFW_SAMPLES, 4);
     glLineWidth(0.5f);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity(); // Resets any previous projection matrices
@@ -78,30 +34,4 @@ int DrawWindow(void)
     GLfloat aspect = width / height;
     glViewport(0, 0, width, height);
     glOrtho(0, width / aspect, height / aspect, 0.0, 0.0, 1.0);
-
-    const auto segments = 64;
-    const auto r = 15;
-    const auto cx = width / 2;
-    const auto cy = height / 2;
-    const auto distance = 20;
-
-    /* Loop until the user closes the window */
-    while (!glfwWindowShouldClose(window))
-    {
-        /* Render here */
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        drawLine(cx - distance, cy - distance, cx + distance, cy + distance);
-        drawCircle(true, cx - distance, cy - distance, r, segments);
-        drawCircle(true, cx + distance, cy + distance, r, segments);
-
-        /* Renders graphics to screen */
-        glfwSwapBuffers(window);
-
-        /* Poll for and process events */
-        glfwPollEvents();
-    }
-
-    glfwTerminate();
-    return 0;
-}
+};
