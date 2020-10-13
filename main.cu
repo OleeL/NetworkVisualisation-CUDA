@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <cstdlib>
 #include <iostream>
+#include <vector>
 
 #define gpuErrchk(ans) gpuAssert((ans), __FILE__, __LINE__);
 inline void gpuAssert(cudaError_t code, const char* file, int line, bool abort = true)
@@ -14,43 +15,42 @@ inline void gpuAssert(cudaError_t code, const char* file, int line, bool abort =
 	if (abort) exit(code);
 }
 
+std::vector<Node> getNodes(const int nNodes);
+
 int main(void)
 {
-    auto n1 = Node(0, 100, 10);
-    auto n2 = Node(1, 200, 20);
-    auto n3 = Node(2, 300, 70);
-    auto n4 = Node(3, 400, 500);
-    auto n5 = Node(4, 700, 100);
-    auto n6 = Node(5, 50, 200);
-    auto n7 = Node(6, 400, 150);
-    auto n8 = Node(7, 20, 400);
+    auto nodes = getNodes(8);
 
-    Node nc1[7] = { n2, n3, n4, n5, n6, n7, n8 };
-    Node nc2[2] = { n1, n3 };
-    Node nc3[2] = { n1, n2 };
-    Node nc4[1] = { n1 };
-    Node nc5[1] = { n1 };
-    Node nc6[1] = { n1 };
-    Node nc7[1] = { n1 };
-    Node nc8[1] = { n1 };
+    std::cout << "size: " << nodes[0].connectedNodes.size() << std::endl;
 
-    n1.setConnectedNodes(nc1, 7);
-    n2.setConnectedNodes(nc2, 2);
-    n3.setConnectedNodes(nc3, 2);
-    n4.setConnectedNodes(nc4, 1);
-    n5.setConnectedNodes(nc5, 1);
-    n6.setConnectedNodes(nc6, 1);
-    n7.setConnectedNodes(nc7, 1);
-    n8.setConnectedNodes(nc8, 1);
-
-    const auto numNodes = 8;
-    Node nodes[] = { n1, n2, n3, n4, n5, n6, n7, n8 };
-
-    //Node::printNodes(nodes, numNodes);
-    Node::printNodesAndConnections(nodes, numNodes);
+    Node::printNodesAndConnections(nodes);
 
     auto drawNodes = Draw();
-    drawNodes.draw(nodes, numNodes);
+    drawNodes.draw(nodes);
 
     return 0;
+}
+
+std::vector<Node> getNodes(const int nNodes)
+{
+    const auto connectedNodesN = nNodes - 1;
+    std::vector<Node> nodes;
+    nodes.reserve(nNodes);
+
+    for (auto i = 0; i < nNodes; i++) {
+        nodes.emplace_back(i, i * i * i, i * 50);
+    }
+
+    for (auto &node : nodes) {
+        std::vector<Node> connections;
+        connections.reserve(connectedNodesN);
+        for (auto &cNode : nodes) {
+            if (cNode.id == node.id) {
+                continue;
+            }
+            connections.push_back(cNode);
+        }
+        node.setConnectedNodes(connections);
+    }
+    return nodes;
 }

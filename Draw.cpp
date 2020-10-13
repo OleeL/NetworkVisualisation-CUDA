@@ -72,28 +72,29 @@ Draw::Draw() : Window("Hello world", 800, 600)
 
 };
 
-void Draw::drawNodes(Node nodes[], const int numOfNodes)
+void Draw::drawNodes(std::vector<Node> &nodes)
 {
     const auto segments = 64;
     const auto r = 15;
+    const auto numOfNodes = nodes.size();
 
     int** drawnLines;
     drawnLines = new int* [numOfNodes];
     for (auto i = 0; i < numOfNodes; i++) {
-        drawnLines[i] = new int[nodes[i].numConnectedNodes];
-        for (auto j = 0; j < nodes[i].numConnectedNodes; j++) {
+        drawnLines[i] = new int[nodes[i].connectedNodes.size()];
+        for (auto j = 0; j < nodes[i].connectedNodes.size(); j++) {
             drawnLines[i][j] = -1;
         }
     }
 
     for (auto i = 0; i < numOfNodes; i++) {
         drawCircle(true, nodes[i].x, nodes[i].y, r, segments);
-        for (auto j = 0; j < nodes[i].numConnectedNodes; j++) {
+        for (auto j = 0; j < nodes[i].connectedNodes.size(); j++) {
             const auto endId = nodes[i].connectedNodes[j].id;
-            if (arrayContainsN(drawnLines[i], nodes[i].numConnectedNodes, endId))
+            if (arrayContainsN(drawnLines[i], nodes[i].connectedNodes.size(), endId))
                 continue;
 
-            appendN(drawnLines[endId], nodes[j].numConnectedNodes, i);
+            appendN(drawnLines[endId], nodes[j].connectedNodes.size(), i);
 
             //std::cout
             //    << "Draw line from ("
@@ -120,13 +121,13 @@ void Draw::drawNodes(Node nodes[], const int numOfNodes)
     delete[] drawnLines;
 }
 
-void Draw::draw(Node nodes[], const int numOfNodes)
+void Draw::draw(std::vector<Node>& nodes)
 {
 
     while (!glfwWindowShouldClose(this->window))
     {
         glClear(GL_COLOR_BUFFER_BIT);
-        this->drawNodes(nodes, numOfNodes);
+        this->drawNodes(nodes);
         glfwSwapBuffers(this->window);
         glfwPollEvents();
     }
