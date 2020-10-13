@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <cstdlib>
 #include <iostream>
+#include <vector>
 
 #define gpuErrchk(ans) gpuAssert((ans), __FILE__, __LINE__);
 inline void gpuAssert(cudaError_t code, const char* file, int line, bool abort = true)
@@ -14,37 +15,42 @@ inline void gpuAssert(cudaError_t code, const char* file, int line, bool abort =
 	if (abort) exit(code);
 }
 
+std::vector<Node> getNodes(const int nNodes);
+
 int main(void)
 {
-    const auto numNodes = 8;
+    auto nodes = getNodes(8);
 
-    Node nodes[numNodes];
+    std::cout << "size: " << nodes[0].connectedNodes.size() << std::endl;
 
-    for (auto i = 0; i < numNodes; i++)
-    {
-        nodes[i] = Node(i, i*i*i, i*50);
-    }
-
-    for (auto i = 0; i < numNodes; i++)
-    {
-        const int connectedNodesN = numNodes - 1;
-        Node connections[connectedNodesN];
-        auto nodesToAdd = 0;
-        for (auto j = 0; j < connectedNodesN; j++)
-        {
-            if (j == i) continue;
-            connections[nodesToAdd] = nodes[j];
-            nodesToAdd++;
-        }
-        nodes[i].setConnectedNodes(connections, 7);
-    }
-
-
-    //Node::printNodes(nodes, numNodes);
-    Node::printNodesAndConnections(nodes, numNodes);
+    Node::printNodesAndConnections(nodes);
 
     auto drawNodes = Draw();
-    drawNodes.draw(nodes, numNodes);
+    drawNodes.draw(nodes);
 
     return 0;
+}
+
+std::vector<Node> getNodes(const int nNodes)
+{
+    const auto connectedNodesN = nNodes - 1;
+    std::vector<Node> nodes;
+    nodes.reserve(nNodes);
+
+    for (auto i = 0; i < nNodes; i++) {
+        nodes.emplace_back(i, i * i * i, i * 50);
+    }
+
+    for (auto &node : nodes) {
+        std::vector<Node> connections;
+        connections.reserve(connectedNodesN);
+        for (auto &cNode : nodes) {
+            if (cNode.id == node.id) {
+                continue;
+            }
+            connections.push_back(cNode);
+        }
+        node.setConnectedNodes(connections);
+    }
+    return nodes;
 }

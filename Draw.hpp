@@ -6,10 +6,10 @@ class Draw : public Window
 {
 	public:
 		Draw();
-		void draw(Node nodes[], const int numOfNodes);
+		void draw(std::vector<Node> &nodes);
 
 	private:
-		void drawNodes(Node nodes[], const int numOfNodes);
+		void drawNodes(std::vector<Node> &nodes);
 		//void drawCircle(bool fill, GLfloat cx, GLfloat cy, GLfloat r, int n_seg);
 		//void rectangle(GLfloat x, GLfloat y, GLfloat w, GLfloat h);
 		//void drawLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2);

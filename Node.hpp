@@ -1,13 +1,13 @@
 #pragma once
 #include "math.h"
+#include <vector>
 
 class Node {
 	public:
 		double x;
 		double y;
 		int id;
-		int numConnectedNodes;
-		Node* connectedNodes;
+		std::vector<Node> connectedNodes;
 
 		/// <summary>
 		/// Blank Constructor 
@@ -31,9 +31,9 @@ class Node {
 		/// <returns></returns>
 		double distance(const Node node1, const Node node2);
 
-		void setConnectedNodes(Node connected[], const int numOfNodes);
+		void setConnectedNodes(const std::vector<Node>& connected);
 
 		static void printNodes(Node nodes[], const int numOfNodes);
 
-		static void printNodesAndConnections(Node nodes[], const int numOfNodes);
+		static void printNodesAndConnections(std::vector<Node> &nodes);
 };
