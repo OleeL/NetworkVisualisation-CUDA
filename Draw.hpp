@@ -10,9 +10,5 @@ class Draw : public Window
 
 	private:
 		void drawNodes(std::vector<Node> &nodes);
-		//void drawCircle(bool fill, GLfloat cx, GLfloat cy, GLfloat r, int n_seg);
-		//void rectangle(GLfloat x, GLfloat y, GLfloat w, GLfloat h);
-		//void drawLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2);
-		//void setColour(GLfloat r, GLfloat g, GLfloat b, GLfloat a);
 };
 

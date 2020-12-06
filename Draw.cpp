@@ -29,11 +29,13 @@ void drawCircle(bool fill, GLfloat cx, GLfloat cy, GLfloat r, int n_seg)
     glEnd();
 }
 
+// Draws a rectangle (x, y, w, h)
 void rectangle(GLfloat x, GLfloat y, GLfloat w, GLfloat h)
 {
     glRectf(x, y, x + w, y + h);
 }
 
+// Draws a line (x1, y1, x2, y2)
 void drawLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2)
 {
     glBegin(GL_LINES);
@@ -42,11 +44,13 @@ void drawLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2)
     glEnd();
 }
 
+// Sets the color (r, g, b, a)
 void setColour(GLfloat r, GLfloat g, GLfloat b, GLfloat a)
 {
     glColor4f(r, g, b, a);
 }
 
+// Loops through an array checking if it contains n
 bool arrayContainsN(int* arr, int elements, int n)
 {
     for (auto i = 0; i < elements; i++) {
@@ -55,6 +59,7 @@ bool arrayContainsN(int* arr, int elements, int n)
     return false;
 }
 
+// adds n to the end of an array
 void appendN(int* arr, int elements, int n)
 {
     for (auto i = 0; i < elements; i++) {
@@ -74,8 +79,8 @@ Draw::Draw() : Window("Hello world", 800, 600)
 
 void Draw::drawNodes(std::vector<Node> &nodes)
 {
-    const auto segments = 64;
-    const auto r = 15;
+    const auto segments = 32;
+    const auto r = 6;
     const auto numOfNodes = nodes.size();
 
     int** drawnLines;
@@ -88,14 +93,16 @@ void Draw::drawNodes(std::vector<Node> &nodes)
     }
 
     for (auto i = 0; i < numOfNodes; i++) {
+        setColour(1, 1, 1, 1);
         drawCircle(true, nodes[i].x, nodes[i].y, r, segments);
         for (auto j = 0; j < nodes[i].connectedNodes.size(); j++) {
+            // The last ID of an array 
             const auto endId = nodes[i].connectedNodes[j].id;
             if (arrayContainsN(drawnLines[i], nodes[i].connectedNodes.size(), endId))
                 continue;
 
             appendN(drawnLines[endId], nodes[j].connectedNodes.size(), i);
-
+            
             //std::cout
             //    << "Draw line from ("
             //    << nodes[i].id
@@ -103,6 +110,7 @@ void Draw::drawNodes(std::vector<Node> &nodes)
             //    << nodes[i].connectedNodes[j].id
             //    << ")"
             //    << std::endl;
+            setColour(1, 1, 1, 0.4);
 
             drawLine(
                 nodes[i].x,
