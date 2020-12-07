@@ -19,10 +19,6 @@ Node::Node(const int id, const double x, const double y) {
 	this->id = id;
 }
 
-void Node::setConnectedNodes(const std::vector<Node>& connected) {
-	this->connectedNodes = connected;
-}
-
 double Node::distance(const Node node1, const Node node2) {
 	return sqrt(pow(node1.x - node2.x, 2) + pow(node1.y - node2.y, 2));
 }
@@ -46,7 +42,7 @@ void Node::printNodesAndConnections(std::vector<Node> &nodes) {
 		for (auto cNode : node.connectedNodes) {
 			i++;
 			//std::cout << i << " ";
-			std::cout << cNode.id << " ";
+			std::cout << cNode->id << " ";
 		}
 		std::cout << std::endl;
 	}

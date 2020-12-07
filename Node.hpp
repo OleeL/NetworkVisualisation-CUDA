@@ -7,7 +7,7 @@ class Node {
 		double x;
 		double y;
 		int id;
-		std::vector<Node> connectedNodes;
+		std::vector<Node*> connectedNodes;
 
 		/// <summary>
 		/// Blank Constructor 
@@ -30,8 +30,6 @@ class Node {
 		/// <param name="node2">Node 2</param>
 		/// <returns></returns>
 		double distance(const Node node1, const Node node2);
-
-		void setConnectedNodes(const std::vector<Node>& connected);
 
 		static void printNodes(Node nodes[], const int numOfNodes);
 

@@ -18,9 +18,6 @@
     <CudaCompile Include="main.cu">
       <Filter>Source Files</Filter>
     </CudaCompile>
-    <CudaCompile Include="nodeUsage.cu">
-      <Filter>Source Files</Filter>
-    </CudaCompile>
     <CudaCompile Include="Node.cpp">
       <Filter>Source Files</Filter>
     </CudaCompile>

@@ -152,7 +152,6 @@
   <ItemGroup>
     <CudaCompile Include="Node.cpp" />
     <CudaCompile Include="main.cu" />
-    <CudaCompile Include="nodeUsage.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Draw.hpp" />
