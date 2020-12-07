@@ -27,18 +27,18 @@ std::vector<Node> getNodes(int nNodes)
     
     // Creating the nodes
     for (auto i = 0; i < nNodes; i++) {
-        nodes.emplace_back(i, i * i * i, i * 50);
+        nodes.emplace_back(i, i * i, i * 10);
     }
 
     // Creating the node connections
     for (auto &node : nodes) {
-        std::vector<Node> connections;
+        auto &connections = node.connectedNodes;
         connections.reserve(connectedNodesN);
+
         for (auto &connectedNode : nodes) {
             if (connectedNode.id == node.id) continue;
-            connections.push_back(connectedNode);
+            connections.emplace_back(&connectedNode);
         }
-        node.setConnectedNodes(connections);
     }
     return nodes;
 }
@@ -50,26 +50,7 @@ std::vector<Node> getNodesRandom(const int nNodes, unsigned int seed = NULL)
         std::cout << rand() % 100 << std::endl;
     }
 
-    //const auto connectedNodesN = nNodes - 1;
     std::vector<Node> nodes;
-    //nodes.reserve(nNodes); // Dedicates space to the nodes vector array
-
-
-    //for (auto i = 0; i < nNodes; i++) {
-    //    nodes.emplace_back(i, i * i * i, i * 50);
-    //}
-
-    //for (auto& node : nodes) {
-    //    std::vector<Node> connections;
-    //    connections.reserve(connectedNodesN);
-    //    for (auto& connectedNode : nodes) {
-    //        if (connectedNode.id == node.id) {
-    //            continue;
-    //        }
-    //        connections.push_back(connectedNode);
-    //    }
-    //    node.setConnectedNodes(connections);
-    //}
     return nodes;
 }
 
@@ -109,8 +90,6 @@ ParamLaunch handleArgs(int argc, char *argv[])
     const auto defaultSeed = NULL;
     const auto defaultLaunchParam = ParamLaunch(defaultNodes, defaultSeed);
 
-
-
     if (argc > 3 || argc < 2) {
         PrintArgErrorMessage();
         return defaultLaunchParam;
@@ -139,8 +118,6 @@ int main(int argc, char* argv[])
     std::cout << "===============" <<                  std::endl;
 
     auto nodes = getNodes(args.numNodes);
-
-    Node::printNodesAndConnections(nodes);
 
     auto drawNodes = Draw();
     drawNodes.draw(nodes);

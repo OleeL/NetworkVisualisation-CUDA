@@ -4,6 +4,7 @@
 #include "window.hpp"
 #include <vector>
 #include <iostream>
+#include <algorithm>
 
 void drawCircle(bool fill, GLfloat cx, GLfloat cy, GLfloat r, int n_seg)
 {
@@ -50,88 +51,56 @@ void setColour(GLfloat r, GLfloat g, GLfloat b, GLfloat a)
     glColor4f(r, g, b, a);
 }
 
-// Loops through an array checking if it contains n
-bool arrayContainsN(int* arr, int elements, int n)
-{
-    for (auto i = 0; i < elements; i++) {
-        if (arr[i] == n) return true;
-    }
-    return false;
-}
-
-// adds n to the end of an array
-void appendN(int* arr, int elements, int n)
-{
-    for (auto i = 0; i < elements; i++) {
-        if (arr[i] == -1)
-        {
-            arr[i] = n;
-            return;
-        }
-    }
-}
-
 
 Draw::Draw() : Window("Hello world", 800, 600)
 {
 
 };
 
+// Draws nodes and connections
 void Draw::drawNodes(std::vector<Node> &nodes)
 {
     const auto segments = 32;
     const auto r = 6;
     const auto numOfNodes = nodes.size();
 
-    int** drawnLines;
-    drawnLines = new int* [numOfNodes];
+    // Creating a 2D array to prevent redrawing connections
+    std::vector<std::vector<int>> drawnLines;
+    drawnLines.resize(numOfNodes);
+
     for (auto i = 0; i < numOfNodes; i++) {
-        drawnLines[i] = new int[nodes[i].connectedNodes.size()];
+        const auto numConnectedNodes = nodes[i].connectedNodes.size();
+        drawnLines[i].reserve(numConnectedNodes);
         for (auto j = 0; j < nodes[i].connectedNodes.size(); j++) {
-            drawnLines[i][j] = -1;
+            drawnLines[j].emplace_back(-1);
         }
     }
 
-    for (auto i = 0; i < numOfNodes; i++) {
+    // Iterating over all nodes
+    for (auto &node : nodes) {
+        // Drawing node
         setColour(1, 1, 1, 1);
-        drawCircle(true, nodes[i].x, nodes[i].y, r, segments);
-        for (auto j = 0; j < nodes[i].connectedNodes.size(); j++) {
+        drawCircle(true, node.x, node.y, r, segments);
+
+        // Iterating over connections
+        for (auto j = 0; j < node.connectedNodes.size(); j++) {
             // The last ID of an array 
-            const auto endId = nodes[i].connectedNodes[j].id;
-            if (arrayContainsN(drawnLines[i], nodes[i].connectedNodes.size(), endId))
+            const auto endId = node.connectedNodes[j]->id;
+            if (std::find(drawnLines[node.id].begin(), drawnLines[node.id].end(), endId) != drawnLines[node.id].end())
                 continue;
-
-            appendN(drawnLines[endId], nodes[j].connectedNodes.size(), i);
-            
-            //std::cout
-            //    << "Draw line from ("
-            //    << nodes[i].id
-            //    << " to "
-            //    << nodes[i].connectedNodes[j].id
-            //    << ")"
-            //    << std::endl;
+            drawnLines[endId].push_back(node.id);
             setColour(1, 1, 1, 0.4);
-
             drawLine(
-                nodes[i].x,
-                nodes[i].y,
-                nodes[i].connectedNodes[j].x,
-                nodes[i].connectedNodes[j].y);
+                node.x,
+                node.y,
+                node.connectedNodes[j]->x,
+                node.connectedNodes[j]->y);
         }
     }
-
-    //std::cout << std::endl;
-
-    for (int i = 0; i < numOfNodes; i++)
-    {
-        delete[] drawnLines[i];
-    }
-    delete[] drawnLines;
 }
 
 void Draw::draw(std::vector<Node>& nodes)
 {
-
     while (!glfwWindowShouldClose(this->window))
     {
         glClear(GL_COLOR_BUFFER_BIT);
