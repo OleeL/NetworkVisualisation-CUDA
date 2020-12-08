@@ -52,7 +52,7 @@ void setColour(GLfloat r, GLfloat g, GLfloat b, GLfloat a)
 }
 
 
-Draw::Draw() : Window("Hello world", 800, 600)
+Draw::Draw(char *title, int w, int h) : Window(title, w, h)
 {
 
 };
@@ -65,8 +65,7 @@ void Draw::drawNodes(std::vector<Node> &nodes)
     const auto numOfNodes = nodes.size();
 
     // Creating a 2D array to prevent redrawing connections
-    std::vector<std::vector<int>> drawnLines;
-    drawnLines.resize(numOfNodes);
+    std::vector<std::vector<int>> drawnLines(numOfNodes);
 
     for (auto i = 0; i < numOfNodes; i++) {
         const auto numConnectedNodes = nodes[i].connectedNodes.size();
