@@ -2,11 +2,13 @@
 
 typedef struct ParamLaunch {
 
-	ParamLaunch(int nodes, long int s);
+	ParamLaunch(int nodes, long int s, int iterations)
+		:numNodes(nodes), seed(s), iterations(iterations) {};
 	ParamLaunch();
 
 	int numNodes;
 	long int seed;
+	int iterations;
 
 } ParamLaunch;
 

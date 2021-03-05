@@ -1,4 +1,3 @@
-#define _USE_MATH_DEFINES
 #include <math.h>
 #include "Draw.hpp"
 #include "window.hpp"
@@ -6,14 +5,16 @@
 #include <iostream>
 #include <algorithm>
 
+const float PI = 3.1415927f;
+
 void drawCircle(bool fill, GLfloat cx, GLfloat cy, GLfloat r, int n_seg)
 {
 	if (!fill) {
 		glEnable(GL_LINE_SMOOTH);
 		glBegin(GL_LINE_LOOP);
 
-		for (int i = 0; i < n_seg; i++) {
-			GLfloat theta = 2.0f * M_PI * i / n_seg; // get the current angle 
+		for (auto i = 0; i < n_seg; ++i) {
+			GLfloat theta = 2.0f * PI * i / n_seg; // get the current angle 
 			GLfloat x = r * cos(theta); // calculate the x component 
 			GLfloat y = r * sin(theta); // calculate the y component 
 			glVertex2f(x + cx, y + cy); // output vertex 
@@ -22,11 +23,11 @@ void drawCircle(bool fill, GLfloat cx, GLfloat cy, GLfloat r, int n_seg)
 		glDisable(GL_LINE_SMOOTH);
 		return;
 	}
-	const GLvoid* p;
+	//const GLvoid* p;
 	glPointSize(r);
 	glEnable(GL_POINT_SMOOTH);
 	glBegin(GL_POINTS);
-	glVertex2i(cx, cy);
+	glVertex2f(cx, cy);
 	glEnd();
 }
 
@@ -66,10 +67,10 @@ void Draw::drawNodes(std::vector<Node>& nodes)
 	// Creating a 2D array to prevent redrawing connections
 	std::vector<std::vector<int>> drawnLines(numOfNodes);
 
-	for (auto i = 0; i < numOfNodes; i++) {
+	for (auto i = 0; i < numOfNodes; ++i) {
 		const auto numConnectedNodes = nodes[i].connectedNodes.size();
 		drawnLines[i].reserve(numConnectedNodes);
-		for (auto j = 0; j < nodes[i].connectedNodes.size(); j++) {
+		for (auto j = 0; j < nodes[i].connectedNodes.size(); ++j) {
 			drawnLines[j].emplace_back(-1);
 		}
 	}
@@ -81,7 +82,7 @@ void Draw::drawNodes(std::vector<Node>& nodes)
 		drawCircle(true, node.position->x, node.position->y, node.radius, segments);
 
 		// Iterating over connections
-		for (auto j = 0; j < node.connectedNodes.size(); j++) {
+		for (auto j = 0; j < node.connectedNodes.size(); ++j) {
 			// The last ID of an array 
 			const auto endId = node.connectedNodes[j]->id;
 			if (std::find(drawnLines[node.id].begin(), drawnLines[node.id].end(), endId) != drawnLines[node.id].end())

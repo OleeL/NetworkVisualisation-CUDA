@@ -30,7 +30,10 @@ int main(int argc, char* argv[])
 	std::vector<Node> nodes;
 	nodes.reserve(args.numNodes); // Dedicates space to the nodes vector array
 	getNodesRandom(nodes, windowWidth, windowHeight, args.seed);
-	arrangeNodes(nodes);
+
+	auto spread = sqrtf(1.0 * windowWidth * windowHeight / args.numNodes);
+	forceDirectedPlacement(nodes, args.iterations, windowWidth+windowHeight, spread);
+
 	Draw((char*) "CPU Implementation", windowWidth, windowHeight).draw(nodes);
 	Node::printNodesAndConnections(nodes);
 

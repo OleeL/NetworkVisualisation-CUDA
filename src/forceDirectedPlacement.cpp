@@ -1,51 +1,25 @@
+#include <iostream>
 #include "forceDirectedPlacement.hpp"
 #include "vector2.hpp"
+#define W = 800;
+#define H = 600;
 
-const static double REPULSION = 3.0;
-const static double ATTRACTION = 3.0;
-const static int SPRING_LENGTH = 100;
-const static int MAX_ITERATIONS = 5;
-const static double DAMPING = 0.5;
-
-/// <summary>
-/// calcs the repulsion force between 2 nodes
-/// </summary>
-/// <param name="x">The node that the force is acting on.</param>
-/// <param name="y">The node creating the force.</param>
-/// <returns>A vector representing the repulsion force.</returns>
-inline Vector2 repulsionForce(Node& node1, Node& node2)
-{
-	auto proximity = std::max(node1.distance(node2), 1.0);
-	double force = -(REPULSION / (proximity * proximity));
-	double angle = node1.position->getBearingAngle(*node2.position);
-	return Vector2(0.0, 0.0);
+// std::max doesn't handle floats
+inline float max(float a, float b) {
+	return (a > b) ? a : b;
 }
 
-/// <summary>
-/// calculates the attriction force between 2 nodes
-/// </summary>
-/// <param name="node1">the node that the force is acting on</param>
-/// <param name="node2">the node that is creating the force</param>
-/// <param name="lengthOfSpring">the length of the spring</param>
-/// <returns>a vector representing the attraction force</returns>
-inline Vector2 calcAttractionForce(Node& node1, Node& node2, double lengthOfSpring) {
-	auto proximity = std::max((int) node1.distance(node2), 1);
-	double force = ATTRACTION * std::max(proximity - lengthOfSpring, 0.0);
-	double angle = node1.position->getBearingAngle(*node2.position);
-	return Vector2(force, angle);
+// std::min doesn't handle floats
+inline float min(float a, float b) {
+	return (a < b) ? a : b;
 }
 
-double totalDisplacement = 0.0;
-int stopCount = 0;
+inline float repulsiveForce(float dist, int numberOfNodes, float spread) {
+	return spread * spread / dist / ((float) numberOfNodes) / 100.0f;
+}
 
-void arrangeNodes(std::vector<Node>& nodes)
-{
-	totalDisplacement = 0.0;
-
-	for (int i = 0; i < MAX_ITERATIONS; ++i)
-	{
-		update(nodes);
-	}
+inline float attractiveForce(float dist, int numberOfNodes, float spread) {
+    return dist * dist / spread / ((float) numberOfNodes);
 }
 
 /// <summary>
@@ -56,53 +30,64 @@ void arrangeNodes(std::vector<Node>& nodes)
 /// <param name="springLength">length of spring</param>
 /// <param name="maxIterations">number of iterations you want
 /// the alg to run. Higher = More accuracy</param>
-void update(std::vector<Node>& nodes, double damping, int springLength, int maxIterations)
+void update(std::vector<Node>& nodes, float scale, float spread)
 {
-	Vector2 zero = (Vector2)Vector2::ZERO;
-	for (auto& node : nodes)
-	{
-		auto netForce = zero;
-		auto currentPosition = Vector2(node.position->distance(zero), node.position->getBearingAngle(zero));
-		// determine repulsion between nodes
-		for (auto& otherNode : nodes) {
-			if (otherNode.id == node.id) continue;
-			auto f = repulsionForce(node, otherNode);
-			netForce.x += f.x;
-			netForce.y += f.y;
-		}
+    float numberOfNodes = nodes.size();
+    for (auto& node : nodes)
+    {
+        // Repulsive Force
+        for (auto& cNode : nodes) {
+            auto d = *node.position - *cNode.position;
+            auto dist = sqrtf(d.x * d.x + d.y * d.y);
+            dist = max(dist, 0.001f);
+            auto rf = repulsiveForce(dist, numberOfNodes, spread);
+            //((*node.displayPosition) += ((Vector2) d)) / dist * rf;
+            node.displayPosition->x += d.x / dist * rf;
+            node.displayPosition->y += d.y / dist * rf;
+        }
 
-		// determine attraction caused by connections
-		for (auto& child : node.connectedNodes) {
-			auto temp = calcAttractionForce(node, *child, springLength);
-			netForce += temp;
-		}
+        // Attractive Force
+        for (auto& cNode : node.connectedNodes) {
+            auto d_x = node.position->x - cNode->position->x;
+            auto d_y = node.position->y - cNode->position->y;
+            auto dist = sqrtf(d_x * d_x + d_y * d_y);
+            dist = max(dist, 0.001f);
+            auto af = attractiveForce(dist, numberOfNodes, spread);
+            node.displayPosition->x -= d_x / dist * af;
+            node.displayPosition->y -= d_y / dist * af;
+        }
 
-		/*for (auto& parent : nodes) {
-			if (parent.connectedNodes.begin(), parent.connectedNodes.end(), ) continue;
-			auto f = calcAttractionForce(node, parent, springLength);
-			netForce.x += f.x;
-			netForce.y += f.y;
-		}*/
-
-		// apply net force to node velocity
-		auto& velocity = *node.velocity;
-		velocity = ((velocity + netForce) * (damping));
-		node.velocity = &velocity;
-
-		// apply velocity to node position
-		auto& position = *node.position;
-		position = velocity + currentPosition;
-		node.position = &position;
-
-		
-	}
-}
+    }
+    // Update
+    for (Node& node : nodes) {
+        float dist = sqrtf(node.displayPosition->x * node.displayPosition->x + node.displayPosition->y * node.displayPosition->y);
+        node.position->x += (dist > scale) ? node.displayPosition->x / dist * scale : node.displayPosition->x;
+        node.position->y += (dist > scale) ? node.displayPosition->y / dist * scale : node.displayPosition->x;
+        node.position->x = min(800.0f / 2.0f, max(-800.0f / 2.0f, node.displayPosition->x));
+        node.position->y = min(600.0f / 2.0f, max(-600.0f / 2.0f, node.displayPosition->y));
+        node.displayPosition->x = 0;
+        node.displayPosition->y = 0;
+    }
+    scale *= 0.99f;
+};
 
 /// <summary>
-/// Runs update with default values
+/// Run force directed placement algorithm on a set number of nodes for i iterations
 /// </summary>
-/// <param name="nodes">nodes you want to run the alg on</param>
-void update(std::vector<Node>& nodes)
+/// <param name="nodes">set of nodes</param>
+/// <param name="iterations">number of iterations i (higher is more accurate)</param>
+void forceDirectedPlacement(std::vector<Node>& nodes, int iterations, float scale, float spread)
 {
-	update(nodes, DAMPING, SPRING_LENGTH, MAX_ITERATIONS);
+    std::cout << "iterations: " << iterations << std::endl;
+
+	for (int i = 0; i < iterations; ++i)
+	{
+		update(nodes, scale, spread);
+	}
+
+    for (Node& node : nodes)
+    {
+        node.position->x += 400;
+        node.position->y += 300;
+    }
 }

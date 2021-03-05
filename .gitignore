@@ -1,3 +1,5 @@
 .vs/
 Debug/
 x64/
+Compiled/
+.vscode/

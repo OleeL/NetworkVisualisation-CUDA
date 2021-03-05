@@ -7,9 +7,10 @@
 class Node {
 public:
 	Vector2* position;
+	Vector2* displayPosition;
 	Vector2* velocity;
 	int id;
-	int radius;
+	float radius;
 	std::vector<Node*> connectedNodes;
 
 	/// <summary>
@@ -25,7 +26,7 @@ public:
 	/// <param name="id">identify the node in undordered list</param>
 	/// <param name="x">coordinate</param>
 	/// <param name="y">coordinate</param>
-	Node(const int id, const double x, const double y);
+	Node(const int id, const float x, const float y);
 
 	/// <summary>
 	/// Prints the euclidean distance between 2 nodes
@@ -33,7 +34,7 @@ public:
 	/// <param name="node1">Node 1</param>
 	/// <param name="node2">Node 2</param>
 	/// <returns></returns>
-	double distance(Node& node);
+	float distance(Node& node);
 
 	/// <summary>
 	/// Prints all nodes data (useful for debugging)

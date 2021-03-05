@@ -40,7 +40,7 @@ void getConnectedNodes(std::vector<Node>& nodes, Node& node)
 	values.shrink_to_fit();
 
 	// Connect the random nodes to this node and this node to the random nodes
-	for (auto i = 0; i < maxConnections; i++) {
+	for (auto i = 0; i < maxConnections; ++i) {
 		alreadyConnected.emplace_back(&nodes[values[i]]);
 		nodes[values[i]].connectedNodes.emplace_back(&node);
 	}
@@ -53,7 +53,7 @@ std::vector<Node> getNodes(int nNodes)
 	nodes.reserve(nNodes); // Dedicates space to the nodes vector array
 
 	// Creating the nodes
-	for (auto i = 0; i < nNodes; i++) {
+	for (auto i = 0; i < nNodes; ++i) {
 		nodes.emplace_back(i, i * i, i * 10);
 	}
 
@@ -80,10 +80,11 @@ void getNodesRandom(std::vector<Node>& nodes, const int width, const int height,
 	srand(seed);
 
 	// Creating the nodes
-	for (auto i = 0; i < nNodes; i++) {
+	for (auto i = 0; i < nNodes; ++i) {
 
 		// instantiating nodes, setting coordinates to rand values (within the width and height of screen)
 		nodes.emplace_back(i, rand() % width, rand() % height);
+		//nodes.emplace_back(i, 0, 0);
 
 		// Get lengths of connections (divided by 2 to reduce connections)
 		const auto connectedNodesN = rand() % (nNodes / 2) + 1;
