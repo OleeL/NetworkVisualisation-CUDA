@@ -5,48 +5,48 @@
 #include <iostream>
 
 Node::Node() {
-	this->position        = new Vector2(0.0, 0.0);
-	this->velocity        = new Vector2(0.0, 0.0);
-	this->displayPosition = new Vector2(0.0f, 0.0f);
-	this->id              = -1;
-	this->radius          = 6;
+	this->position         = new Vector2(0.0f, 0.0f);
+	this->velocity         = new Vector2(0.0f, 0.0f);
+	this->displacePosition = new Vector2(0.0f, 0.0f);
+	this->id               = -1;
+	this->radius           = 6;
 }
 
 Node::~Node() {
 	delete this->position;
-	delete this->displayPosition;
+	delete this->displacePosition;
 	delete this->velocity;
 }
 
 Node::Node(const int id, const float x, const float y) {
-	this->position        = new Vector2(x, y);
-	this->displayPosition = new Vector2(x, y);
-	this->velocity        = new Vector2(0.0, 0.0);
-	this->id              = id;
-	this->radius          = 6;
+	this->position         = new Vector2(x, y);
+	this->displacePosition = new Vector2(0.0f, 0.0f);
+	this->velocity         = new Vector2(0.0f, 0.0f);
+	this->id               = id;
+	this->radius           = 6;
 }
 
 inline float Node::distance(Node& node) {
 	return this->position->distance(*node.position);
 }
 
-void Node::printNodes(Node nodes[], const int numOfNodes) {
-	for (auto i = 0; i < numOfNodes; ++i) {
-		std::cout << nodes[i].position->x << ", " << nodes[i].position->y << std::endl;
+void Node::printNodes(std::vector<Node*>& nodes) {
+	for (auto i = 0; i < nodes.size(); ++i) {
+		std::cout << nodes[i]->position->x << ", " << nodes[i]->position->y << std::endl;
 	}
 	std::cout << std::endl;
 }
 
-void Node::printNodesAndConnections(std::vector<Node>& nodes) {
+void Node::printNodesAndConnections(std::vector<Node*>& nodes) {
 	for (auto& node : nodes) {
 		std::cout
-			<< node.id
+			<< node->id
 			<< " ("
-			<< node.position->x << ", " << node.position->y
+			<< node->position->x << ", " << node->position->y
 			<< ")\n\tConnections: ";
 
 		auto i = 0;
-		for (auto& cNode : node.connectedNodes) {
+		for (auto& cNode : node->connectedNodes) {
 			++i;
 			//std::cout << i << " ";
 			std::cout << cNode->id << " ";

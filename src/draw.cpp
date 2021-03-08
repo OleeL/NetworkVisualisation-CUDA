@@ -59,7 +59,7 @@ Draw::Draw(char* title, int w, int h) : Window(title, w, h)
 };
 
 // Draws nodes and connections
-void Draw::drawNodes(std::vector<Node>& nodes)
+void Draw::drawNodes(std::vector<Node*>& nodes)
 {
 	const auto segments = 32;
 	const auto numOfNodes = nodes.size();
@@ -68,9 +68,9 @@ void Draw::drawNodes(std::vector<Node>& nodes)
 	std::vector<std::vector<int>> drawnLines(numOfNodes);
 
 	for (auto i = 0; i < numOfNodes; ++i) {
-		const auto numConnectedNodes = nodes[i].connectedNodes.size();
+		const auto numConnectedNodes = nodes[i]->connectedNodes.size();
 		drawnLines[i].reserve(numConnectedNodes);
-		for (auto j = 0; j < nodes[i].connectedNodes.size(); ++j) {
+		for (auto j = 0; j < nodes[i]->connectedNodes.size(); ++j) {
 			drawnLines[j].emplace_back(-1);
 		}
 	}
@@ -79,26 +79,26 @@ void Draw::drawNodes(std::vector<Node>& nodes)
 	for (auto& node : nodes) {
 		// Drawing node
 		setColour(1, 1, 1, 1);
-		drawCircle(true, node.position->x, node.position->y, node.radius, segments);
+		drawCircle(true, node->position->x, node->position->y, node->radius, segments);
 
 		// Iterating over connections
-		for (auto j = 0; j < node.connectedNodes.size(); ++j) {
+		for (auto j = 0; j < node->connectedNodes.size(); ++j) {
 			// The last ID of an array 
-			const auto endId = node.connectedNodes[j]->id;
-			if (std::find(drawnLines[node.id].begin(), drawnLines[node.id].end(), endId) != drawnLines[node.id].end())
+			const auto endId = node->connectedNodes[j]->id;
+			if (std::find(drawnLines[node->id].begin(), drawnLines[node->id].end(), endId) != drawnLines[node->id].end())
 				continue;
-			drawnLines[endId].push_back(node.id);
+			drawnLines[endId].push_back(node->id);
 			setColour(1.0f, 1.0f, 1.0f, 0.4f);
 			drawLine(
-				(float) node.position->x,
-				(float) node.position->y,
-				(float) node.connectedNodes[j]->position->x,
-				(float) node.connectedNodes[j]->position->y);
+				node->position->x,
+				node->position->y,
+				node->connectedNodes[j]->position->x,
+				node->connectedNodes[j]->position->y);
 		}
 	}
 }
 
-void Draw::draw(std::vector<Node>& nodes)
+void Draw::draw(std::vector<Node*>& nodes)
 {
 	while (!glfwWindowShouldClose(this->window))
 	{

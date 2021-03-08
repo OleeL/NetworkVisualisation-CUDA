@@ -7,9 +7,9 @@ class Draw : public Window
 {
 	public:
 		Draw(char *title, int w, int h);
-		void draw(std::vector<Node> &nodes);
+		void draw(std::vector<Node*> &nodes);
 
 	private:
-		void drawNodes(std::vector<Node> &nodes);
+		void drawNodes(std::vector<Node*> &nodes);
 };
 

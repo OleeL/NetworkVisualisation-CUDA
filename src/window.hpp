@@ -10,5 +10,8 @@ public:
 
 	Window(const char* windowName, const int width, const int height);
 
+	/// <summary>
+	/// Window context
+	/// </summary>
 	GLFWwindow* window;
 };

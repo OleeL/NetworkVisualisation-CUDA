@@ -57,6 +57,11 @@ public:
 	Vector2& operator+=(float& n);
 
 	/// <summary>
+	/// Sets the vector to 0,0
+	/// </summary>
+	void reset(void);
+
+	/// <summary>
 	/// gets distance of this node to another node
 	/// </summary>
 	/// <returns>the distance from this node to another node</returns>

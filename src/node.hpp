@@ -7,7 +7,7 @@
 class Node {
 public:
 	Vector2* position;
-	Vector2* displayPosition;
+	Vector2* displacePosition;
 	Vector2* velocity;
 	int id;
 	float radius;
@@ -39,10 +39,10 @@ public:
 	/// <summary>
 	/// Prints all nodes data (useful for debugging)
 	/// </summary>
-	static void printNodes(Node nodes[], const int numOfNodes);
+	static void printNodes(std::vector<Node*>& nodes);
 
 	/// <summary>
 	/// Prints all nodes and connections (useful for debugging)
 	/// </summary>
-	static void printNodesAndConnections(std::vector<Node>& nodes);
+	static void printNodesAndConnections(std::vector<Node*>& nodes);
 };

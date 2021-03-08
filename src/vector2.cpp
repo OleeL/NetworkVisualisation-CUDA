@@ -6,6 +6,11 @@
 
 const Vector2 Vector2::ZERO = Vector2(0, 0);
 
+Vector2::Vector2(float x, float y) {
+	this->x = x;
+	this->y = y;
+};
+
 Vector2 Vector2::operator+(Vector2& n)
 {
 	return Vector2(this->x + n.x, this->y + n.y);
@@ -55,12 +60,13 @@ Vector2& Vector2::operator+=(float& n)
 	return *this;
 };
 
-Vector2::Vector2(float x, float y) {
-	this->x = x;
-	this->y = y;
+void Vector2::reset(void)
+{
+	this->x = 0;
+	this->y = 0;
 };
 
-inline float Vector2::distance(Vector2& node)
+float Vector2::distance(Vector2& node)
 {
 	return sqrtf(powf(this->y - node.y, 2) + powf(this->x - node.x, 2));
 };
