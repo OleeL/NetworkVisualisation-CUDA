@@ -8,8 +8,8 @@
 int main(int argc, char* argv[])
 {
 	// Initialisation
-	const auto windowWidth = 25<<5;
-	const auto windowHeight = 75<<3;
+	const auto windowWidth = 800;
+	const auto windowHeight = 600;
 	auto windowSize = Vector2(windowWidth, windowHeight);
 	std::vector<Node*> nodes;
 
