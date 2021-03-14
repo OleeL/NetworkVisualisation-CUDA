@@ -22,7 +22,7 @@ void PrintDefault()
 
 void PrintArgErrorMessage()
 {
-    std::cout << "Usage: fyp_cuda_nodes [numOfNodes] [seed]" << std::endl;
+    std::cout << "Usage: network-visualisation-gpu [numOfNodes] [seed]" << std::endl;
     PrintDefault();
 }
 
