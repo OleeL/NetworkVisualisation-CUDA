@@ -32,7 +32,7 @@ void PrintNoSeed()
 }
 
 // Takes the arguments passed into the program
-// Args: [int NumberOfNodes, int Seed]
+// Args: [int NumberOfNodes, int Seed (optional)]
 // Returns the seed and number of nodes to be handled.
 ParamLaunch handleArgs(int argc, char* argv[])
 {

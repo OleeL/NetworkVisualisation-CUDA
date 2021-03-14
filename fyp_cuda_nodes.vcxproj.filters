@@ -15,17 +15,14 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="main.cu">
+    <CudaCompile Include="Node.cpp">
       <Filter>Source Files</Filter>
     </CudaCompile>
-    <CudaCompile Include="Node.cpp">
+    <CudaCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </CudaCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="main%28old%29.cu">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="window.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>

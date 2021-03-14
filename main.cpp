@@ -1,5 +1,5 @@
-#include "cuda_runtime.h"
-#include "device_launch_parameters.h"
+//#include "cuda_runtime.h"
+//#include "device_launch_parameters.h"
 #include "Draw.hpp"
 #include "Startup.hpp"
 #include "NodeGeneration.hpp"

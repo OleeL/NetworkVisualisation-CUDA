@@ -126,6 +126,9 @@
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(CudaToolkitLibDir);$(SolutionDir)Dependencies\GLFW\lib-vc2019</AdditionalLibraryDirectories>
       <AdditionalDependencies>%(AdditionalDependencies);glfw3.lib;opengl32.lib</AdditionalDependencies>
     </Link>
+    <CudaCompile>
+      <GenerateRelocatableDeviceCode>false</GenerateRelocatableDeviceCode>
+    </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -147,18 +150,18 @@
     </Link>
     <CudaCompile>
       <TargetMachinePlatform>64</TargetMachinePlatform>
+      <GenerateRelocatableDeviceCode>false</GenerateRelocatableDeviceCode>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <CudaCompile Include="Node.cpp" />
-    <CudaCompile Include="main.cu" />
+    <CudaCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Draw.hpp" />
     <ClInclude Include="NodeGeneration.hpp" />
     <ClInclude Include="Startup.hpp" />
     <ClInclude Include="window.hpp" />
-    <ClInclude Include="main%28old%29.cu" />
     <ClInclude Include="Node.hpp" />
   </ItemGroup>
   <ItemGroup>
