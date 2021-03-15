@@ -15,42 +15,52 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="Node.cpp">
+    <ClCompile Include="src\application.cpp">
       <Filter>Source Files</Filter>
-    </CudaCompile>
-    <CudaCompile Include="main.cpp">
+    </ClCompile>
+    <ClCompile Include="src\draw.cpp">
       <Filter>Source Files</Filter>
-    </CudaCompile>
+    </ClCompile>
+    <ClCompile Include="src\node.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\nodeGeneration.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\startup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\forceDirectedPlacement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\vector2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="window.hpp">
+    <ClInclude Include="src\draw.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Node.hpp">
+    <ClInclude Include="src\node.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Draw.hpp">
+    <ClInclude Include="src\nodeGeneration.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Startup.hpp">
+    <ClInclude Include="src\startup.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NodeGeneration.hpp">
+    <ClInclude Include="src\window.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Draw.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Startup.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="NodeGeneration.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <ClInclude Include="src\forceDirectedPlacement.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vector2.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
