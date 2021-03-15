@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\application.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\draw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -62,5 +59,9 @@
     <ClInclude Include="src\vector2.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="src\main(old).cu" />
+    <CudaCompile Include="src\main.cu" />
   </ItemGroup>
 </Project>
