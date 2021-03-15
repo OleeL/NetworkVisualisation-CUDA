@@ -1,10 +1,10 @@
 ﻿#include <cuda_runtime.h>
 #include <device_launch_parameters.h>
+#include <iostream>
+#include <cstdlib>
 #include "Draw.hpp"
 #include "Startup.hpp"
 #include "NodeGeneration.hpp"
-#include <iostream>
-#include <cstdlib>
 #include "forceDirectedPlacement.hpp"
 
 #define gpuErrchk(ans) gpuAssert((ans), __FILE__, __LINE__);
