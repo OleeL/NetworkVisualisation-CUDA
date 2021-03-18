@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
 	auto scale = windowWidth + windowHeight;
 	auto fdp = FdpContext(nodes, windowSize, scale, spread, args.iterations);
 	forceDirectedPlacement(fdp, args);
-	Node::printNodesAndConnections(nodes);
+	//Node::printNodesAndConnections(nodes);
 
 	// Setting up window
 	auto draw = new Draw((char*)"CPU Implementation", windowWidth, windowHeight);

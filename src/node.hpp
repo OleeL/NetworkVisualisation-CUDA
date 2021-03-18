@@ -8,9 +8,7 @@ class Node {
 public:
 	Vector2* position;
 	Vector2* displacePosition;
-	Vector2* velocity;
 	int id;
-	float radius;
 	std::vector<Node*> connectedNodes;
 
 	/// <summary>
@@ -34,7 +32,7 @@ public:
 	/// <param name="node1">Node 1</param>
 	/// <param name="node2">Node 2</param>
 	/// <returns></returns>
-	float distance(Node& node);
+	inline float distance(Node& node);
 
 	/// <summary>
 	/// Prints all nodes data (useful for debugging)

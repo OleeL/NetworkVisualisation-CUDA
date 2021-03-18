@@ -2,6 +2,7 @@
 #include "forceDirectedPlacement.hpp"
 #include "vector2.hpp"
 #include "startup.hpp"
+#include <chrono>
 
 // std::max doesn't handle floats
 inline float max(float a, float b) {
@@ -90,8 +91,18 @@ void printData(FdpContext& fdp, ParamLaunch& args)
 void forceDirectedPlacement(FdpContext& fdp, ParamLaunch& args)
 {
 	printData(fdp, args);
+
+	using namespace std::chrono;
+	auto start = steady_clock::now();
+	// Run alg 
 	for (int i = 0; i < fdp.iterations; ++i)
 		update(fdp);
+
+	std::cout <<
+		duration_cast<milliseconds>(steady_clock::now() - start).count()
+		<< "ms" <<
+		std::endl;
+
 
 	for (auto& node : fdp.nodes)
 	{

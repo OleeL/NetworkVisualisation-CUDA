@@ -6,24 +6,19 @@
 
 Node::Node() {
 	this->position         = new Vector2(0.0f, 0.0f);
-	this->velocity         = new Vector2(0.0f, 0.0f);
 	this->displacePosition = new Vector2(0.0f, 0.0f);
 	this->id               = -1;
-	this->radius           = 6;
 }
 
 Node::~Node() {
 	delete this->position;
 	delete this->displacePosition;
-	delete this->velocity;
 }
 
 Node::Node(const int id, const float x, const float y) {
 	this->position         = new Vector2(x, y);
 	this->displacePosition = new Vector2(0.0f, 0.0f);
-	this->velocity         = new Vector2(0.0f, 0.0f);
 	this->id               = id;
-	this->radius           = 6;
 }
 
 inline float Node::distance(Node& node) {

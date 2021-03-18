@@ -79,7 +79,7 @@ void Draw::drawNodes(std::vector<Node*>& nodes)
 	for (auto& node : nodes) {
 		// Drawing node
 		setColour(1, 1, 1, 1);
-		drawCircle(true, node->position->x, node->position->y, node->radius, segments);
+		drawCircle(true, node->position->x, node->position->y, 6.0f, segments);
 
 		// Iterating over connections
 		for (auto j = 0; j < node->connectedNodes.size(); ++j) {
