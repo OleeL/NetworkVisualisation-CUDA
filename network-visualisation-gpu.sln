@@ -1,31 +1,25 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
-VisualStudioVersion = 16.0.30804.86
+VisualStudioVersion = 16.0.31112.23
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "network-visualisation-gpu", "network-visualisation-gpu.vcxproj", "{7A9D1BF6-253C-4C21-9F71-FE30212D5643}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "network-visualisation-gpu", "network-visualisation-gpu.vcxproj", "{E5545F72-1A15-459C-A5E8-47FFF6858769}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
-		Debug|x86 = Debug|x86
 		Release|x64 = Release|x64
-		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7A9D1BF6-253C-4C21-9F71-FE30212D5643}.Debug|x64.ActiveCfg = Debug|x64
-		{7A9D1BF6-253C-4C21-9F71-FE30212D5643}.Debug|x64.Build.0 = Debug|x64
-		{7A9D1BF6-253C-4C21-9F71-FE30212D5643}.Debug|x86.ActiveCfg = Debug|Win32
-		{7A9D1BF6-253C-4C21-9F71-FE30212D5643}.Debug|x86.Build.0 = Debug|Win32
-		{7A9D1BF6-253C-4C21-9F71-FE30212D5643}.Release|x64.ActiveCfg = Release|x64
-		{7A9D1BF6-253C-4C21-9F71-FE30212D5643}.Release|x64.Build.0 = Release|x64
-		{7A9D1BF6-253C-4C21-9F71-FE30212D5643}.Release|x86.ActiveCfg = Release|Win32
-		{7A9D1BF6-253C-4C21-9F71-FE30212D5643}.Release|x86.Build.0 = Release|Win32
+		{E5545F72-1A15-459C-A5E8-47FFF6858769}.Debug|x64.ActiveCfg = Debug|x64
+		{E5545F72-1A15-459C-A5E8-47FFF6858769}.Debug|x64.Build.0 = Debug|x64
+		{E5545F72-1A15-459C-A5E8-47FFF6858769}.Release|x64.ActiveCfg = Release|x64
+		{E5545F72-1A15-459C-A5E8-47FFF6858769}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {B986732B-4B33-4B51-809F-6A3CE6E6E35F}
+		SolutionGuid = {A68EC063-33C9-4EC8-92A0-2433CCD01C98}
 	EndGlobalSection
 EndGlobal
