@@ -1,4 +1,4 @@
-#include "window.hpp"
+#include "window.cuh"
 #include <GLFW/glfw3.h>
 
 Window::Window(const char* windowName, const int width, const int height)
@@ -31,7 +31,7 @@ Window::Window(const char* windowName, const int width, const int height)
 	glClear(GL_COLOR_BUFFER_BIT);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	GLfloat aspect = width / height;
+	GLfloat aspect = float(width) / float(height);
 	glViewport(0, 0, width, height);
 	glOrtho(0, width / aspect, height / aspect, 0.0, 0.0, 1.0);
 };

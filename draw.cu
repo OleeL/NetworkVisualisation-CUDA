@@ -1,9 +1,11 @@
 #include <math.h>
-#include "Draw.hpp"
-#include "window.hpp"
-#include <vector>
 #include <iostream>
 #include <algorithm>
+#include <GLFW/glfw3.h>
+#include "draw.cuh"
+#include "window.cuh"
+#include "graph.cuh"
+#include "vector2.cuh"
 
 const float PI = 3.1415927f;
 
@@ -23,7 +25,6 @@ void drawCircle(bool fill, GLfloat cx, GLfloat cy, GLfloat r, int n_seg)
 		glDisable(GL_LINE_SMOOTH);
 		return;
 	}
-	//const GLvoid* p;
 	glPointSize(r);
 	glEnable(GL_POINT_SMOOTH);
 	glBegin(GL_POINTS);
@@ -59,55 +60,42 @@ Draw::Draw(char* title, int w, int h) : Window(title, w, h)
 };
 
 // Draws nodes and connections
-void Draw::drawNodes(std::vector<Node*>& nodes)
+void Draw::drawNodes(Graph& graph)
 {
-	const auto segments = 32;
-	const auto numOfNodes = nodes.size();
+	const auto segments = 16;
+	const auto numOfNodes = graph.numberOfNodes;
+	const auto numOfEdges = graph.numberOfEdges;
 
-	// Creating a 2D array to prevent redrawing connections
-	std::vector<std::vector<int>> drawnLines(numOfNodes);
-
-	for (auto i = 0; i < numOfNodes; ++i) {
-		const auto numConnectedNodes = nodes[i]->connectedNodes.size();
-		drawnLines[i].reserve(numConnectedNodes);
-		for (auto j = 0; j < nodes[i]->connectedNodes.size(); ++j) {
-			drawnLines[j].emplace_back(-1);
-		}
+	for (auto i = 0; i < numOfEdges; ++i)
+	{
+		setColour(1.0f, 1.0f, 1.0f, 0.7f);
+		drawLine(
+			static_cast<GLfloat>(graph.nodes[graph.distinctEdges[i].x].x),
+			static_cast<GLfloat>(graph.nodes[graph.distinctEdges[i].x].y),
+			static_cast<GLfloat>(graph.nodes[graph.distinctEdges[i].y].x),
+			static_cast<GLfloat>(graph.nodes[graph.distinctEdges[i].y].y));
 	}
 
 	// Iterating over all nodes
-	for (auto& node : nodes) {
+	for (auto i = 0; i < numOfNodes; ++i) {
 		// Drawing node
 		setColour(1, 1, 1, 1);
-		drawCircle(true, node->position->x, node->position->y, node->radius, segments);
-
-		// Iterating over connections
-		for (auto j = 0; j < node->connectedNodes.size(); ++j) {
-			// The last ID of an array 
-			const auto endId = node->connectedNodes[j]->id;
-			if (std::find(drawnLines[node->id].begin(), drawnLines[node->id].end(), endId) != drawnLines[node->id].end())
-				continue;
-			drawnLines[endId].push_back(node->id);
-			setColour(1.0f, 1.0f, 1.0f, 0.4f);
-			drawLine(
-				node->position->x,
-				node->position->y,
-				node->connectedNodes[j]->position->x,
-				node->connectedNodes[j]->position->y);
-		}
+		drawCircle(true, graph.nodes[i].x, graph.nodes[i].y, 6.0f, segments);
 	}
 }
 
-void Draw::draw(std::vector<Node*>& nodes)
+void Draw::draw(Graph& graph)
 {
+	auto* pixels = malloc(800 * 600 * 4);
+	this->drawNodes(graph);
+	glReadPixels(0, 0, 800, 600, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 	while (!glfwWindowShouldClose(this->window))
 	{
 		glClear(GL_COLOR_BUFFER_BIT);
-		this->drawNodes(nodes);
+		glDrawPixels(800, 600, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 		glfwSwapBuffers(this->window);
 		glfwPollEvents();
 	}
-
 	glfwTerminate();
 	return;
 };

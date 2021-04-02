@@ -1,8 +1,8 @@
-#include "Startup.hpp"
-#include <sstream>
 #include <iostream>
+#include <sstream>
 #include <time.h>
 #include <fstream>
+#include "Startup.cuh"
 
 /// <summary>
 /// Converts a set of chars to an integer
@@ -22,13 +22,8 @@ int charToInt(char* str)
 /// <param name="param"></param>
 void PrintDefault(const ParamLaunch& param)
 {
-	std::cout << "Usage: fyp_cuda_nodes [numOfNodes] [seed] [iterations]" << std::endl;
-	std::cout << "or" << std::endl;
 	std::cout << "Usage: fyp_cuda_nodes [fileName] [iterations]" << std::endl << std::endl;
-	std::cout << "Using default parameters..." << std::endl;
-	std::cout << "\t - Using time based seed: " << param.seed << std::endl;
-	std::cout << "\t - Using default iterations: " << param.iterations << std::endl;
-	std::cout << "\t - Using default nodes: " << param.numNodes << std::endl;
+	exit(EXIT_FAILURE);
 }
 
 // By default, 1 argument is passed into the program
@@ -47,10 +42,13 @@ ParamLaunch handleArgs(int argc, char* argv[])
 	if (argc == 3) {
 		std::ifstream file;
 		file.open(argv[1]);
-		int nodes;
-		file >> nodes;
+		if (!file.good()) {
+			file.close();
+			std::cout << "bad file / file does not exist";
+			exit(EXIT_FAILURE);
+		}
 		file.close();
-		return ParamLaunch(argv[1], charToInt(argv[2]), nodes);
+		return ParamLaunch(argv[1], charToInt(argv[2]));
 	}
 
 	// Nodes
