@@ -73,6 +73,7 @@ float repulsiveForce(float dist, int numberOfNodes, float spread) {
 __global__ __inline__
 void forceUpdate(Node* nodes, Vector2i* edges, int* connectionIndex)
 {
+	extern __shared__ int s[];
 	auto id = blockIdx.x * blockDim.x + threadIdx.x;
 	auto inc = blockDim.x * gridDim.x;
 	auto nNodes = c_parameters.numberOfNodes;
@@ -101,14 +102,15 @@ void forceUpdate(Node* nodes, Vector2i* edges, int* connectionIndex)
 
 	// Attractive Force
 	// Nodes that are connected pull one another
+	//__syncthreads();
 	for (auto ic = start; ic < connectionIndex[id]; ++ic) {
 		node2.x = nodes[edges[ic].y].x, node2.y = nodes[edges[ic].y].y;
 		auto dx = node1.x - node2.x;
 		auto dy = node1.y - node2.y;
 		auto dist = maxf(sqrtf(dx * dx + dy * dy), 0.001f);
-		auto af = attractiveForce(dist, int(nNodes), c_parameters.spread);
-		d_x -= dx / dist * af;
-		d_y -= dy / dist * af;
+		auto force = attractiveForce(dist, int(nNodes), c_parameters.spread);
+		d_x -= dx / dist * force;
+		d_y -= dy / dist * force;
 	}
 	nodes[id].dx = d_x;
 	nodes[id].dy = d_y;
@@ -123,21 +125,20 @@ void forceUpdate(Node* nodes, Vector2i* edges, int* connectionIndex)
 __global__ __inline__
 void displaceUpdate(Node* nodes)
 {
+	extern __shared__ int s[];
 	auto id = blockIdx.x * blockDim.x + threadIdx.x;
 	if (id >= c_parameters.numberOfNodes) return;
 	auto scale = c_parameters.scale;
-	auto wWidth = c_parameters.wWidth;
-	auto wHeight = c_parameters.wHeight;
-	auto& nodeRef = nodes[id];
-	auto node = nodeRef;
+	auto w = c_parameters.wWidth;
+	auto h = c_parameters.wHeight;
+	auto node = nodes[id];
 
-	auto dist = sqrtf(nodeRef.dx * nodeRef.dx + nodeRef.dy * node.dy);
+	auto dist = sqrtf(node.dx * node.dx + node.dy * node.dy);
 	node.x += (dist > scale) ? node.dx / dist * scale : node.dx;
 	node.y += (dist > scale) ? node.dy / dist * scale : node.dy;
-	node.x = minf(wWidth / 2.0f, maxf(-wWidth / 2.0f, node.x));
-	node.y = minf(wHeight / 2.0f, maxf(-wHeight / 2.0f, node.y));
-	nodeRef.x = node.x;
-	nodeRef.y = node.y;
+	node.x = minf(w / 2.0f, maxf(-w / 2.0f, node.x));
+	node.y = minf(h / 2.0f, maxf(-h / 2.0f, node.y));
+	nodes[id] = node;
 }
 
 /// <summary>
@@ -174,6 +175,7 @@ inline void printProgressReport(int& i, int& iterations, int& progress, int& las
 /// <param name="args"></param>
 void forceDirectedPlacement(ParamLaunch& args, Graph& graph)
 {
+
 	// Putting memory to GPU constant memory
 	const auto SPREADOFFSET = sqrt(args.numNodes / std::min(args.iterations, args.numNodes)); // Known as the C value
 	const auto BLOCK_SIZE = 1024;
