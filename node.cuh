@@ -7,8 +7,6 @@ class Node {
 public:
 	float x;
 	float y;
-	float dx;
-	float dy;
 
 	/// <summary>
 	/// Blank Constructor 

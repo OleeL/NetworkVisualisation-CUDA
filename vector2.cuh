@@ -6,8 +6,10 @@ class Vector2 {
 public:
 	T x, y;
 
+	__device__ __host__
 	Vector2(T x, T y) : x(x), y(y) {};
 
+	__device__ __host__
 	Vector2() : x(0), y(0) { };
 
 	/// <summary>
@@ -86,7 +88,9 @@ bool operator!=(const Vector2<T>& left, const Vector2<T>& right);
 /// subtraction of 2 vectors
 /// </summary>
 template <typename T>
-Vector2<T> operator-(const Vector2<T>& left, const Vector2<T>& right);
+__inline__  __device__ Vector2<T> operator-(const Vector2<T>& left, const Vector2<T>& right) {
+	return Vector2<T>(left.x - right.x, left.y - right.y);
+}
 
 /// <summary>
 /// multiplication of 2 types

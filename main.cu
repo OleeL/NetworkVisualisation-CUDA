@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
 	forceDirectedPlacement(args, graph);
 
 	// Setting up window
-	auto draw = new Draw((char*) "GPU Implementation", args.wWidth, args.wHeight);
+	auto draw = new Draw((char*) "GPU Implementation", args.windowSize.x, args.windowSize.y);
 	draw->draw(graph);
 
 	// Cleanup

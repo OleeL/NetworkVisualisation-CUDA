@@ -5,19 +5,22 @@
 Graph::Graph() {
 	this->nodes = nullptr;
 	this->edges = nullptr;
+	this->displacement = nullptr;
 	this->distinctEdges = nullptr;
 	this->connectionIndex = nullptr;
-	this->numberOfNodes = -1;
-	this->numberOfEdges = -1;
+	this->numberOfNodes = 0;
+	this->numberOfEdges = 0;
 };
 
-Graph::Graph(Node* nodes,
+Graph::Graph(Vector2f* nodes,
+	Vector2f* displacement,
 	Vector2i* edges,
 	Vector2i* distinctEdges,
 	unsigned int* connectionIndex,
 	unsigned int numberOfNodes,
 	unsigned int numberOfEdges) :
 	nodes(nodes),
+	displacement(displacement),
 	edges(edges),
 	distinctEdges(distinctEdges),
 	connectionIndex(connectionIndex),
@@ -26,7 +29,7 @@ Graph::Graph(Node* nodes,
 {};
 
 void Graph::printNodes() {
-	for (auto i = 0; i < this->numberOfNodes; ++i)
+	for (unsigned int i = 0; i < this->numberOfNodes; ++i)
 	{
 		std::cout
 			<< i
@@ -39,7 +42,7 @@ void Graph::printNodes() {
 }
 
 inline void Graph::printNodesAndConnections(Graph& graph) {
-	for (auto i = 0; i < graph.numberOfEdges * 2; ++i) {
+	for (unsigned int i = 0; i < graph.numberOfEdges * 2; ++i) {
 		std::cout
 			<< graph.edges[i].x
 			<< " connected to "

@@ -1,19 +1,29 @@
+
 #include <cuda.h>
 #include <cuda_runtime.h>
+#include <cuda_runtime_api.h>
 #include <device_launch_parameters.h>
+#include <device_functions.h>
+
 #include <fstream>
 #include <chrono>
 #include <algorithm>
 #include <stdlib.h>
 #include <math.h>
-#include <chrono>
+#include <cassert>
 #include <iostream>
 
 #include "forceDirectedPlacement.cuh"
 #include "vector2.cuh"
 #include "startup.cuh"
 #include "graph.cuh"
-#include <cassert>
+
+#pragma once
+#ifdef __INTELLISENSE__
+void __syncthreads() {};
+#endif
+
+constexpr float MIN_NUM = 1.0f / (1 << 12);
 
 // Good practice to put on kernels
 inline cudaError_t gpuErrchk(cudaError_t result)
@@ -28,40 +38,42 @@ inline cudaError_t gpuErrchk(cudaError_t result)
 }
 
 struct ConstantDeviceParams {
-	int wWidth;
-	int wHeight;
 	int numberOfNodes;
 	int numberOfEdges;
-	float scale;  // This is known as k in reingold's
+	int scale;  // This is known as k in reingold's
 	float spread;
 	int iterations;
+	int windowWidth;
+	int windowHeight;
 };
 
 __constant__
 ConstantDeviceParams c_parameters;
 
 // std::max doesn't handle floats
-__device__ __forceinline__
-float maxf(float a, float b) {
+template <typename T>
+__host__ __device__ __inline__
+T maxD(T a, T b) {
 	return (a > b) ? a : b;
 }
 
 // std::min doesn't handle floats
-__device__ __forceinline__
-float minf(float a, float b) {
+template <class T>
+__host__ __device__ __inline__
+T minD(T a, T b) {
 	return (a < b) ? a : b;
 }
 
 // f_a(d) = d^2 / k
-__device__ __forceinline__
-float attractiveForce(float dist, int numberOfNodes, float spread) {
-	return dist * dist / spread / static_cast<float>(numberOfNodes);
+__device__ __inline__
+float attractiveForce(float& dist, int& numberOfNodes, float& spread) {
+	return dist * dist / spread / numberOfNodes;
 }
 
 // f_t = -k^2 / d
-__device__ __forceinline__
-float repulsiveForce(float dist, int numberOfNodes, float spread) {
-	return spread * spread / dist / static_cast<float>(numberOfNodes) / 100.0f;
+__device__ __inline__
+float repulsiveForce(float& dist, int& numberOfNodes, float& spread) {
+	return spread * spread / dist / numberOfNodes / 100;
 }
 
 /// <summary>
@@ -70,49 +82,60 @@ float repulsiveForce(float dist, int numberOfNodes, float spread) {
 /// <param name="nodes">Nodes you want to run the alg on</param>
 /// <param name="edges">length of spring</param>
 /// <param name="connectionIndex">a list of connectionIndex</param>
-__global__ __inline__
-void forceUpdate(Node* nodes, Vector2i* edges, int* connectionIndex)
+__global__
+void forceUpdate(Vector2f* nodes, Vector2f* displacement, Vector2i* edges, int* connectionIndex)
 {
 	auto id = blockIdx.x * blockDim.x + threadIdx.x;
-	auto inc = blockDim.x * gridDim.x;
 	auto nNodes = c_parameters.numberOfNodes;
-	auto nEdges = c_parameters.numberOfEdges;
+	if (id >= nNodes) return;
 
-	if (id >= c_parameters.numberOfNodes) return;
-	float d_x, d_y;
-	float2 node1, node2 = make_float2(0,0);
-	d_x = 0;
-	d_y = 0;
-	node1.x = nodes[id].x, node1.y = nodes[id].y;
+	extern __shared__ int s[];
+	auto spread = c_parameters.spread;
+	auto inc = blockDim.x * gridDim.x;
+	auto d = Vector2f();
+	float dist, force;
+	Vector2f node1, node2;
 
-	// Repulsive force all nodes repel each other
-	for (auto ic = 0; ic < nNodes; ++ic) {
-		node2.x = nodes[ic].x, node2.y = nodes[ic].y;
-		auto cmpNode = nodes[ic];
-		auto dx = node1.x - node2.x;
-		auto dy = node1.y - node2.y;
-		auto dist = maxf(sqrtf(dx * dx + dy * dy), 0.001f);
-		auto force = repulsiveForce(dist, nNodes, c_parameters.spread);
-		d_x += dx / dist * force;
-		d_y += dy / dist * force;
+	while (id < nNodes)
+	{
+		__syncthreads();
+		node1 = nodes[id];
+
+		// Repulsive force all nodes repel each other
+		for (auto ic = 0; ic < nNodes; ++ic) {
+			if (ic == id) continue;
+			node2 = nodes[ic];
+			node2 = node1 - node2;
+
+			// using max to prevent dividing by 0
+			dist = maxD(sqrtf(node2.x * node2.x + node2.y * node2.y), MIN_NUM);
+			if (dist == MIN_NUM) continue;
+
+			force = repulsiveForce(dist, nNodes, spread);
+			d.x += node2.x / dist * force;
+			d.y += node2.y / dist * force;
+		}
+
+		auto start = (id > 0) ? connectionIndex[id - 1] : 0;
+
+		// Attractive Force
+		// Nodes that are connected pull one another
+		//__syncthreads();
+		for (auto ic = start; ic < connectionIndex[id]; ++ic) {
+			node2 = nodes[edges[ic].y];
+			node2 = node1 - node2;
+			dist = maxD(sqrtf(node2.x * node2.x + node2.y * node2.y), MIN_NUM);
+			if (dist == MIN_NUM) continue;
+
+			force = attractiveForce(dist, nNodes, spread);
+			d.x -= node2.x / dist * force;
+			d.y -= node2.y / dist * force;
+		}
+		__syncthreads();
+
+		displacement[id] = d;
+		id += inc;
 	}
-
-	int start = (id > 0) ? connectionIndex[id - 1] : 0;
-
-	// Attractive Force
-	// Nodes that are connected pull one another
-	for (auto ic = start; ic < connectionIndex[id]; ++ic) {
-		node2.x = nodes[edges[ic].y].x, node2.y = nodes[edges[ic].y].y;
-		auto dx = node1.x - node2.x;
-		auto dy = node1.y - node2.y;
-		auto dist = maxf(sqrtf(dx * dx + dy * dy), 0.001f);
-		auto af = attractiveForce(dist, int(nNodes), c_parameters.spread);
-		d_x -= dx / dist * af;
-		d_y -= dy / dist * af;
-	}
-	nodes[id].dx = d_x;
-	nodes[id].dy = d_y;
-	id += inc;
 }
 
 /// <summary>
@@ -120,24 +143,28 @@ void forceUpdate(Node* nodes, Vector2i* edges, int* connectionIndex)
 /// </summary>
 /// <param name="fdp">force directed placement context</param>
 /// <returns></returns>
-__global__ __inline__
-void displaceUpdate(Node* nodes)
+__global__
+void displaceUpdate(Vector2f* nodes, Vector2f* displacement)
 {
 	auto id = blockIdx.x * blockDim.x + threadIdx.x;
 	if (id >= c_parameters.numberOfNodes) return;
+	extern __shared__ int s[];
 	auto scale = c_parameters.scale;
-	auto wWidth = c_parameters.wWidth;
-	auto wHeight = c_parameters.wHeight;
-	auto& nodeRef = nodes[id];
-	auto node = nodeRef;
+	auto windowWidth = c_parameters.windowWidth;
+	auto windowHeight = c_parameters.windowHeight;
 
-	auto dist = sqrtf(nodeRef.dx * nodeRef.dx + nodeRef.dy * node.dy);
-	node.x += (dist > scale) ? node.dx / dist * scale : node.dx;
-	node.y += (dist > scale) ? node.dy / dist * scale : node.dy;
-	node.x = minf(wWidth / 2.0f, maxf(-wWidth / 2.0f, node.x));
-	node.y = minf(wHeight / 2.0f, maxf(-wHeight / 2.0f, node.y));
-	nodeRef.x = node.x;
-	nodeRef.y = node.y;
+	__syncthreads();
+	auto node = nodes[id];
+	auto displace = displacement[id];
+
+	auto dist = sqrtf(displace.x * displace.x + displace.y * displace.y);
+	node.x += (dist > scale) ? displace.x / dist * scale : displace.x,
+	node.y += (dist > scale) ? displace.y / dist * scale : displace.y;
+	node.x = minD(windowWidth * 0.5f, maxD(-windowWidth * 0.5f, node.x)),
+	node.y = minD(windowHeight * 0.5f, maxD(-windowHeight * 0.5f, node.y));
+
+	__syncthreads();
+	nodes[id] = node;
 }
 
 /// <summary>
@@ -154,13 +181,21 @@ void printData(ParamLaunch& args, ConstantDeviceParams& dv)
 	else
 		std::cout << "File:\t" << args.fileName << std::endl;
 	std::cout << "Itera:\t" << args.iterations << std::endl;
-	std::cout << "Size:\t" << dv.wWidth << "x" << dv.wHeight << std::endl;
+	std::cout << "Spread:\t" << dv.spread << std::endl;
+	std::cout << "Size:\t" << dv.windowWidth << "x" << dv.windowHeight << std::endl;
 	std::cout << "===================" << std::endl;
 }
 
+/// <summary>
+/// progress bar during execution
+/// </summary>
+/// <param name="i"></param>
+/// <param name="iterations"></param>
+/// <param name="progress"></param>
+/// <param name="lastCaught"></param>
 inline void printProgressReport(int& i, int& iterations, int& progress, int& lastCaught)
 {
-	progress = static_cast<float>(i) / static_cast<float>(iterations) * 100;
+	progress = int(static_cast<float>(i) / static_cast<float>(iterations) * 100);
 	if (progress != lastCaught && progress % 10 == 0) {
 		std::cout << "Progress: " << progress << "%" << std::endl;
 		lastCaught = progress;
@@ -170,46 +205,51 @@ inline void printProgressReport(int& i, int& iterations, int& progress, int& las
 /// <summary>
 /// Force directed placement algorithm
 /// </summary>
-/// <param name="fdp"></param>
-/// <param name="args"></param>
+/// <param name="args">parameter launch args</param>
+/// <param name="graph">graph args</param>
 void forceDirectedPlacement(ParamLaunch& args, Graph& graph)
 {
 	// Putting memory to GPU constant memory
-	const auto SPREADOFFSET = sqrt(args.numNodes / std::min(args.iterations, args.numNodes)); // Known as the C value
-	const auto BLOCK_SIZE = 1024;
+	constexpr auto BLOCK_SIZE = 1024;
+	auto SPREADOFFSET = maxD((1.0f - (MIN_NUM * (args.iterations / args.numNodes))), float(0.25));
 	ConstantDeviceParams data;
 	data.numberOfNodes = graph.numberOfNodes;
 	data.numberOfEdges = graph.numberOfEdges;
 	data.iterations = args.iterations;
-	data.scale = args.wWidth + args.wHeight;
-	data.spread = SPREADOFFSET * sqrtf(static_cast<float>(args.wWidth) * static_cast<float>(args.wHeight) / graph.numberOfNodes); 
-	data.wWidth = args.wWidth;
-	data.wHeight = args.wHeight;
+	data.scale = args.windowSize.x + args.windowSize.y;
+	data.spread = SPREADOFFSET * sqrtf(static_cast<float>(args.windowSize.x) * args.windowSize.y / graph.numberOfNodes);
+	data.windowWidth = args.windowSize.x;
+	data.windowHeight = args.windowSize.y;
+
+	std::cout << SPREADOFFSET << std::endl;
 
 	printData(args, data);
 	cudaMemcpyToSymbol(c_parameters, &data, sizeof(ConstantDeviceParams));
 	gpuErrchk(cudaPeekAtLastError());
 
-	Node* d_nodes;
+	Vector2f* d_nodes;
+	Vector2f* d_displacement;
 	Vector2i* d_edges;
 	int* d_connectionIndex;
 
 	// Memory allocation. Takes the point of the pointer into cudaMalloc
 	// Allocating the number of nodes for the number of floats * 2.
 	cudaMalloc(&d_connectionIndex, sizeof(int) * graph.numberOfNodes);
-	cudaMalloc(&d_nodes, sizeof(Node) * graph.numberOfNodes);
+	cudaMalloc(&d_nodes, sizeof(Vector2f) * graph.numberOfNodes);
+	cudaMalloc(&d_displacement, sizeof(Vector2f) * graph.numberOfNodes);
 	cudaMalloc(&d_edges, sizeof(Vector2i) * graph.numberOfEdges * 2);
 	gpuErrchk(cudaPeekAtLastError());
 
 	cudaMemcpy(d_connectionIndex, graph.connectionIndex, sizeof(int) * graph.numberOfNodes, cudaMemcpyHostToDevice);
-	cudaMemcpy(d_nodes, graph.nodes, sizeof(Node) * graph.numberOfNodes, cudaMemcpyHostToDevice);
+	cudaMemcpy(d_nodes, graph.nodes, sizeof(Vector2f) * graph.numberOfNodes, cudaMemcpyHostToDevice);
+	cudaMemcpy(d_displacement, graph.displacement, sizeof(Vector2f) * graph.numberOfNodes, cudaMemcpyHostToDevice);
 	cudaMemcpy(d_edges, graph.edges, sizeof(Vector2i) * graph.numberOfEdges * 2, cudaMemcpyHostToDevice);
 	gpuErrchk(cudaPeekAtLastError());
 
-	auto block_size = min(BLOCK_SIZE, graph.numberOfNodes);
+	auto block_size = std::min(BLOCK_SIZE, int(graph.numberOfNodes));
 	block_size += (32 - block_size % 32) % 32;
 	auto blockDim = dim3(block_size);
-	auto gridDim = dim3(min(32, (block_size - 1 + graph.numberOfNodes) / block_size));
+	auto gridDim = dim3(minD(32, (block_size - 1 + int(graph.numberOfNodes)) / block_size));
 
 	using namespace std::chrono;
 	auto start = steady_clock::now();
@@ -219,11 +259,11 @@ void forceDirectedPlacement(ParamLaunch& args, Graph& graph)
 	for (auto i = 0; i < data.iterations; ++i)
 	{
 		printProgressReport(i, data.iterations, progress, lastCaught);
-		forceUpdate<<<gridDim, blockDim>>>(d_nodes, d_edges, d_connectionIndex);
+		forceUpdate<<<gridDim, blockDim>>>(d_nodes, d_displacement, d_edges, d_connectionIndex);
 		gpuErrchk(cudaPeekAtLastError());
 		gpuErrchk(cudaDeviceSynchronize());
 
-		displaceUpdate<<<gridDim, blockDim>>>(d_nodes);
+		displaceUpdate<<<gridDim, blockDim>>>(d_nodes, d_displacement);
 		gpuErrchk(cudaPeekAtLastError());
 		gpuErrchk(cudaDeviceSynchronize());
 	}
@@ -233,16 +273,16 @@ void forceDirectedPlacement(ParamLaunch& args, Graph& graph)
 		<< "ms" <<
 		std::endl;
 
-	cudaMemcpy(graph.nodes, d_nodes, sizeof(Node) * graph.numberOfNodes, cudaMemcpyDeviceToHost);
-	cudaMemcpy(graph.edges, d_edges, sizeof(Vector2i) * graph.numberOfEdges * 2, cudaMemcpyDeviceToHost);
+	cudaMemcpy(graph.nodes, d_nodes, sizeof(Vector2f) * graph.numberOfNodes, cudaMemcpyDeviceToHost);
 	cudaFree(d_nodes);
+	cudaFree(d_displacement);
 	cudaFree(d_edges);
 	cudaFree(d_connectionIndex);
 
-	for (auto i = 0; i < graph.numberOfNodes; ++i)
+	for (unsigned int i = 0; i < graph.numberOfNodes; ++i)
 	{
-		graph.nodes[i].x += (args.wWidth / 2);
-		graph.nodes[i].y += (args.wHeight / 2);
+		graph.nodes[i].x += (args.windowSize.x * 0.5f);
+		graph.nodes[i].y += (args.windowSize.y * 0.5f);
 	}
 
 }
