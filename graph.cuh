@@ -7,8 +7,9 @@
 /// </summary>
 class Graph {
 public:
-	Node* nodes;
-	Vector2i* edges;   // stores all of the
+	Vector2f* nodes;
+	Vector2f* displacement;  // stores x and y displacement for all nodes
+	Vector2i* edges;         // stores all of the edges
 	Vector2i* distinctEdges; // useful for drawing the nodes.
 
 	// index represents the nodes, value represents where edges end
@@ -24,7 +25,8 @@ public:
 	Graph();
 
 	Graph(
-		Node* nodes,
+		Vector2f* nodes,
+		Vector2f* displacement,
 		Vector2i* edges,
 		Vector2i* distinctEdges,
 		unsigned int* connectionIndex,

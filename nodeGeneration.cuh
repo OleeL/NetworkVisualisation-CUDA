@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Node.cuh"
 #include "graph.cuh"
 
 /// <summary>

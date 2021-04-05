@@ -44,24 +44,25 @@ Graph handleFile(char* fileName) {
 	file.open(fileName);
 	file >> nNodes >> lines;
 
-	auto nodes = new Node[nNodes];
+	auto nodes = new Vector2f[nNodes];
 	auto edges = new Vector2i[lines * 2];
+	auto displacement = new Vector2f[nNodes]();
 	auto distinctEdges = new Vector2i[lines];
 	auto connectionIndex = new unsigned int[nNodes]();
 
 	// Looping through all nodes
-	for (auto i = 0; i < nNodes; ++i)
+	for (unsigned int i = 0; i < nNodes; ++i)
 	{
-		nodes[i] = Node(
-			static_cast<float>(rand()) / RAND_MAX - 0.5,
-			static_cast<float>(rand()) / RAND_MAX - 0.5
+		nodes[i] = Vector2f(
+			static_cast<float>(rand()) / RAND_MAX - 0.5f,
+			static_cast<float>(rand()) / RAND_MAX - 0.5f
 		);
 	}
 	{
 		auto v = Vector2i();
 		auto inc = 0;
 		// Looping through all distinct edges
-		for (auto i = 0; i < lines; ++i)
+		for (unsigned int i = 0; i < lines; ++i)
 		{
 			file >> v.x >> v.y;
 			distinctEdges[i] = v;
@@ -73,11 +74,12 @@ Graph handleFile(char* fileName) {
 	}
 	file.close();
 	std::sort(edges, edges + (2 * lines), order);
-	for (auto i = 0; i < 2 * lines; ++i) {
+	for (unsigned int i = 0; i < 2 * lines; ++i) {
 		auto e = edges[i].x;
 		connectionIndex[e] += 1;
 	}
-	for (auto i = 1; i < nNodes; ++i) connectionIndex[i] += connectionIndex[i - 1]; //End Index
+	for (unsigned int i = 1; i < nNodes; ++i)
+		connectionIndex[i] += connectionIndex[i - 1]; //End Index
 
-	return Graph(nodes, edges, distinctEdges, connectionIndex, nNodes, lines);
+	return Graph(nodes, displacement, edges, distinctEdges, connectionIndex, nNodes, lines);
 }

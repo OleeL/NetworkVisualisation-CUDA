@@ -45,12 +45,6 @@ inline Vector2<T> operator+(const Vector2<T>& left, const Vector2<T>& right)
 }
 
 template <typename T>
-inline Vector2<T> operator-(const Vector2<T>& left, const Vector2<T>& right)
-{
-    return Vector2<T>(left.x - right.x, left.y - right.y);
-}
-
-template <typename T>
 inline Vector2<T> operator*(const Vector2<T>& left, T right)
 {
     return Vector2<T>(left.x * right, left.y * right);
