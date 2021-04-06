@@ -214,7 +214,8 @@ void forceDirectedPlacement(ParamLaunch& args, Graph& graph)
 {
 	// Putting memory to GPU constant memory
 	constexpr auto BLOCK_SIZE = 1024;
-	auto SPREADOFFSET = maxD((1.0f - (MIN_NUM * (args.iterations / args.numNodes))), float(0.25));
+	//auto SPREADOFFSET = maxD((1.0f - (MIN_NUM * (args.iterations / args.numNodes))), float(0.25));
+	auto SPREADOFFSET = 0.2f;
 	ConstantDeviceParams data;
 	data.numberOfNodes = graph.numberOfNodes;
 	data.numberOfEdges = graph.numberOfEdges;
@@ -279,12 +280,5 @@ void forceDirectedPlacement(ParamLaunch& args, Graph& graph)
 	cudaFree(d_displacement);
 	cudaFree(d_edges);
 	cudaFree(d_connectionIndex);
-
-	// moves the nodes to the center of the screen
-	for (unsigned int i = 0; i < graph.numberOfNodes; ++i)
-	{
-		graph.nodes[i].x += (args.windowSize.x * 0.5f);
-		graph.nodes[i].y += (args.windowSize.y * 0.5f);
-	}
 
 }
