@@ -172,7 +172,7 @@ void displaceUpdate(Vector2f* nodes, Vector2f* displacement)
 /// </summary>
 /// <param name="fdp">force directed placement args</param>
 /// <param name="args">user args passed in</param>
-void printData(ParamLaunch& args, ConstantDeviceParams& dv)
+void printData(ParamLaunch& args, ConstantDeviceParams& dv, const float& SPREADOFFSET)
 {
 	std::cout << "===================" << std::endl;
 	std::cout << "Nodes:\t" << dv.numberOfNodes << std::endl;
@@ -181,7 +181,10 @@ void printData(ParamLaunch& args, ConstantDeviceParams& dv)
 	else
 		std::cout << "File:\t" << args.fileName << std::endl;
 	std::cout << "Itera:\t" << args.iterations << std::endl;
-	std::cout << "Spread:\t" << dv.spread << std::endl;
+#if defined(DEBUG) || defined(_DEBUG)
+	std::cout << "Offset: " << SPREADOFFSET << std::endl;
+	std::cout << "Total spread:\t" << dv.spread << std::endl;
+#endif
 	std::cout << "Size:\t" << dv.windowWidth << "x" << dv.windowHeight << std::endl;
 	std::cout << "===================" << std::endl;
 }
@@ -211,7 +214,8 @@ void forceDirectedPlacement(ParamLaunch& args, Graph& graph)
 {
 	// Putting memory to GPU constant memory
 	constexpr auto BLOCK_SIZE = 1024;
-	auto SPREADOFFSET = maxD((1.0f - (MIN_NUM * (args.iterations / args.numNodes))), float(0.25));
+	//auto SPREADOFFSET = maxD((1.0f - (MIN_NUM * (args.iterations / args.numNodes))), float(0.25));
+	auto SPREADOFFSET = 0.2f;
 	ConstantDeviceParams data;
 	data.numberOfNodes = graph.numberOfNodes;
 	data.numberOfEdges = graph.numberOfEdges;
@@ -221,9 +225,7 @@ void forceDirectedPlacement(ParamLaunch& args, Graph& graph)
 	data.windowWidth = args.windowSize.x;
 	data.windowHeight = args.windowSize.y;
 
-	std::cout << SPREADOFFSET << std::endl;
-
-	printData(args, data);
+	printData(args, data, SPREADOFFSET);
 	cudaMemcpyToSymbol(c_parameters, &data, sizeof(ConstantDeviceParams));
 	gpuErrchk(cudaPeekAtLastError());
 
@@ -278,11 +280,5 @@ void forceDirectedPlacement(ParamLaunch& args, Graph& graph)
 	cudaFree(d_displacement);
 	cudaFree(d_edges);
 	cudaFree(d_connectionIndex);
-
-	for (unsigned int i = 0; i < graph.numberOfNodes; ++i)
-	{
-		graph.nodes[i].x += (args.windowSize.x * 0.5f);
-		graph.nodes[i].y += (args.windowSize.y * 0.5f);
-	}
 
 }

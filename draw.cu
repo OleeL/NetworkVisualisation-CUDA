@@ -56,7 +56,7 @@ void setColour(GLfloat r, GLfloat g, GLfloat b, GLfloat a)
 
 Draw::Draw(char* title, int w, int h) : Window(title, w, h)
 {
-
+	pixels = malloc(width * height * 4.0f);
 };
 
 // Draws nodes and connections
@@ -66,7 +66,7 @@ void Draw::drawNodes(Graph& graph)
 	const auto numOfNodes = graph.numberOfNodes;
 	const auto numOfEdges = graph.numberOfEdges;
 
-	for (auto i = 0; i < numOfEdges; ++i)
+	for (unsigned int i = 0; i < numOfEdges; ++i)
 	{
 		setColour(1.0f, 1.0f, 1.0f, 0.7f);
 		drawLine(
@@ -77,25 +77,41 @@ void Draw::drawNodes(Graph& graph)
 	}
 
 	// Iterating over all nodes
-	for (auto i = 0; i < numOfNodes; ++i) {
+	for (unsigned int i = 0; i < numOfNodes; ++i) {
 		// Drawing node
 		setColour(1, 1, 1, 1);
 		drawCircle(true, graph.nodes[i].x, graph.nodes[i].y, 6.0f, segments);
 	}
 }
 
+inline void drawTestFrame(int x1, int y1, int& x2, int& y2)
+{
+	drawLine(x1, y1, x1, y2);
+	drawLine(x1, y1, x2, y1);
+};
+
+void Draw::redraw(Graph& graph) {
+	pollDraw = false;
+	glClearColor(0.0, 0.0, 0.0, 1.0);  //clear screen by white pixel
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	drawNodes(graph);
+	glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+}
+
 void Draw::draw(Graph& graph)
 {
-	auto* pixels = malloc(800 * 600 * 4);
-	this->drawNodes(graph);
-	glReadPixels(0, 0, 800, 600, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-	while (!glfwWindowShouldClose(this->window))
+	drawNodes(graph);
+	glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+	while (!glfwWindowShouldClose(window))
 	{
+		if (pollDraw) redraw(graph);
 		glClear(GL_COLOR_BUFFER_BIT);
-		glDrawPixels(800, 600, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-		glfwSwapBuffers(this->window);
+		glDrawPixels(width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
 	glfwTerminate();
+	free(pixels);
 	return;
 };

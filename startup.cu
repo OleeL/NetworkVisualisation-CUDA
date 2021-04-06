@@ -59,7 +59,7 @@ ParamLaunch handleArgs(int argc, char* argv[])
 	}
 
 	// Seed
-	int seed = (charToInt(argv[2]) < 0) ? time(NULL) : charToInt(argv[2]);
+	int seed = (charToInt(argv[2]) < 0) ? int(time(NULL)) : charToInt(argv[2]);
 
 	// Iterations
 	auto iterations = charToInt(argv[3]);
