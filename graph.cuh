@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include "node.cuh"
 #include "vector2.cuh"
 
 /// <summary>
@@ -42,5 +41,5 @@ public:
 	/// <summary>
 	/// Prints all nodes and connections (useful for debugging)
 	/// </summary>
-	void printNodesAndConnections(Graph& graph);
+	void printNodesAndConnections();
 };

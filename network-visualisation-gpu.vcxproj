@@ -91,7 +91,6 @@
     <CudaCompile Include="graph.cu" />
     <CudaCompile Include="forceDirectedPlacement.cu" />
     <CudaCompile Include="main.cu" />
-    <CudaCompile Include="node.cu" />
     <CudaCompile Include="nodeGeneration.cu" />
     <CudaCompile Include="startup.cu" />
     <CudaCompile Include="vector2.cu" />
@@ -101,7 +100,6 @@
     <ClInclude Include="draw.cuh" />
     <ClInclude Include="forceDirectedPlacement.cuh" />
     <ClInclude Include="graph.cuh" />
-    <ClInclude Include="node.cuh" />
     <ClInclude Include="nodeGeneration.cuh" />
     <ClInclude Include="startup.cuh" />
     <ClInclude Include="vector2.cuh" />

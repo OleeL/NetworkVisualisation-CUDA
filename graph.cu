@@ -29,7 +29,7 @@ Graph::Graph(Vector2f* nodes,
 {};
 
 void Graph::printNodes() {
-	for (unsigned int i = 0; i < this->numberOfNodes; ++i)
+	for (unsigned int i = 0; i < numberOfNodes; ++i)
 	{
 		std::cout
 			<< i
@@ -41,12 +41,12 @@ void Graph::printNodes() {
 	}
 }
 
-inline void Graph::printNodesAndConnections(Graph& graph) {
-	for (unsigned int i = 0; i < graph.numberOfEdges * 2; ++i) {
+inline void Graph::printNodesAndConnections() {
+	for (unsigned int i = 0; i < numberOfEdges * 2; ++i) {
 		std::cout
-			<< graph.edges[i].x
+			<< edges[i].x
 			<< " connected to "
-			<< graph.edges[i].y
+			<< edges[i].y
 			<< std::endl;
 	}
 }

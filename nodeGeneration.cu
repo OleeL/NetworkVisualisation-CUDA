@@ -2,7 +2,6 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include "node.cuh"
 #include "nodeGeneration.cuh"
 #include "graph.cuh"
 #include "vector2.cuh"

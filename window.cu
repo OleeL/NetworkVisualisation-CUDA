@@ -38,20 +38,6 @@ float* getMatrix(void)
 	return arr;
 }
 
-void Window::zoomIn()
-{
-	scale = std::max(0.125f, scale - zoomAmount);
-	projMatrix[0] = scale;
-	projMatrix[5] = scale;
-}
-
-void Window::zoomOut()
-{
-	scale = std::min(10.0f, scale + zoomAmount);
-	projMatrix[0] = scale;
-	projMatrix[5] = scale;
-}
-
 void Window::key_callback_imp(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	bool moved = false, zoomed = false;
