@@ -4,10 +4,10 @@
 #include <iostream>
 #include <cstdlib>
 #include "draw.cuh"
-#include "graph.cuh"
 #include "startup.cuh"
 #include "nodeGeneration.cuh"
 #include "forceDirectedPlacement.cuh"
+#include "graph.cuh"
 
 int main(int argc, char* argv[])
 {
@@ -17,6 +17,7 @@ int main(int argc, char* argv[])
 	// Initialisation
 	auto graph = handleFile(args.fileName);
 
+	// Running algorithm
 	forceDirectedPlacement(args, graph);
 
 	// Setting up window
@@ -25,5 +26,6 @@ int main(int argc, char* argv[])
 
 	// Cleanup
 	delete draw;
+	graph.destroy();
 	return 0;
 }

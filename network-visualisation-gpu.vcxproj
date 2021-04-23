@@ -62,6 +62,7 @@
       <TargetMachinePlatform>64</TargetMachinePlatform>
       <Include>$(SolutionDir)Dependencies\GLFW\include;%(Include);</Include>
       <GenerateRelocatableDeviceCode>false</GenerateRelocatableDeviceCode>
+      <AdditionalOptions>--verbose %(AdditionalOptions)</AdditionalOptions>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -84,6 +85,7 @@
       <TargetMachinePlatform>64</TargetMachinePlatform>
       <Include>$(SolutionDir)Dependencies\GLFW\include;%(Include);</Include>
       <GenerateRelocatableDeviceCode>false</GenerateRelocatableDeviceCode>
+      <AdditionalOptions>--verbose %(AdditionalOptions)</AdditionalOptions>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>

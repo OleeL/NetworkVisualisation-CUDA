@@ -29,11 +29,8 @@ inline void goToLine(std::ifstream& file, int line)
 // ...
 bool order(Vector2i &a, Vector2i &b)
 {
-	if (a.x < b.x)
-		return true;
-	else if (a.y < b.y && a.x == b.x)
-		return true; // If they're the same way round then true
-	return false;
+	if (a.x < b.x) return true;
+	return (a.y < b.y && a.x == b.x);
 }
 
 Graph handleFile(char* fileName) {
@@ -44,10 +41,9 @@ Graph handleFile(char* fileName) {
 	file >> nNodes >> lines;
 
 	auto nodes = new Vector2f[nNodes];
-	auto edges = new Vector2i[lines * 2];
 	auto displacement = new Vector2f[nNodes]();
 	auto distinctEdges = new Vector2i[lines];
-	auto connectionIndex = new unsigned int[nNodes]();
+	auto adjacencyMatrix = new bool[nNodes * nNodes]();
 
 	// Looping through all nodes
 	for (unsigned int i = 0; i < nNodes; ++i)
@@ -59,26 +55,17 @@ Graph handleFile(char* fileName) {
 	}
 	{
 		auto v = Vector2i();
-		auto inc = 0;
 		// Looping through all distinct edges
 		for (unsigned int i = 0; i < lines; ++i)
 		{
 			file >> v.x >> v.y;
 			distinctEdges[i] = v;
-			edges[inc] = v;
-			std::swap(v.x, v.y);
-			edges[inc + 1] = v;
-			inc += 2;
+			adjacencyMatrix[v.x * nNodes + v.y] = true;
+			adjacencyMatrix[v.y * nNodes + v.x] = true;
 		}
 	}
-	file.close();
-	std::sort(edges, edges + (2 * lines), order);
-	for (unsigned int i = 0; i < 2 * lines; ++i) {
-		auto e = edges[i].x;
-		connectionIndex[e] += 1;
-	}
-	for (unsigned int i = 1; i < nNodes; ++i)
-		connectionIndex[i] += connectionIndex[i - 1]; //End Index
 
-	return Graph(nodes, displacement, edges, distinctEdges, connectionIndex, nNodes, lines);
+	file.close();
+
+	return Graph(nodes, displacement, distinctEdges, adjacencyMatrix, nNodes, lines);
 }
