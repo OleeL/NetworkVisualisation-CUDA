@@ -199,7 +199,7 @@ void printData(ParamLaunch& args, ConstantDeviceParams& dv, const float& SPREADO
 {
 	std::cout << "===================" << std::endl;
 	std::cout << "Nodes:\t" << dv.numberOfNodes << std::endl;
-	if (args.fileName == nullptr)
+	if (args.fileName == NULL)
 		std::cout << "Seed:\t" << args.seed << std::endl;
 	else
 		std::cout << "File:\t" << args.fileName << std::endl;
@@ -255,8 +255,8 @@ void forceDirectedPlacement(ParamLaunch& args, Graph& graph)
 	data.iterations = args.iterations;
 	data.scale = args.windowSize.x + args.windowSize.y;
 	data.spread = SPREADOFFSET * sqrtf(static_cast<float>(args.windowSize.x) * args.windowSize.y / graph.numberOfNodes);
-	data.windowWidth = args.windowSize.x;
-	data.windowHeight = args.windowSize.y;
+	data.windowWidth = 600;
+	data.windowHeight = 600;
 
 	printData(args, data, SPREADOFFSET);
 

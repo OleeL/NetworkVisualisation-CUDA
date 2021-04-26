@@ -1,12 +1,11 @@
 ﻿#include "graph.cuh"
-#include "vector2.cuh"
 #include <iostream>
 
 Graph::Graph() {
-	this->nodes = nullptr;
-	this->displacement = nullptr;
-	this->distinctEdges = nullptr;
-	this->adjacencyMatrix = nullptr;
+	this->nodes = NULL;
+	this->displacement = NULL;
+	this->distinctEdges = NULL;
+	this->adjacencyMatrix = NULL;
 	this->numberOfNodes = 0;
 	this->numberOfEdges = 0;
 };

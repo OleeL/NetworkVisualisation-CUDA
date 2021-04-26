@@ -93,14 +93,12 @@
     <CudaCompile Include="main.cu" />
     <CudaCompile Include="nodeGeneration.cu" />
     <CudaCompile Include="startup.cu" />
-    <CudaCompile Include="vector2.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="forceDirectedPlacement.cuh" />
     <ClInclude Include="graph.cuh" />
     <ClInclude Include="nodeGeneration.cuh" />
     <ClInclude Include="startup.cuh" />
-    <ClInclude Include="vector2.cuh" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

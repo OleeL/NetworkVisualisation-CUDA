@@ -1,6 +1,5 @@
 #pragma once
 #include <time.h>
-#include "vector2.cu"
 
 class ParamLaunch {
 public:
@@ -9,12 +8,12 @@ public:
 
 	int numNodes = 10;
 	int numEdges = 0;
-	char* fileName = nullptr;
+	char* fileName = NULL;
 	long long int seed = 0;
 	int iterations = 100;
 
 	// Try to keep size W * H
-	Vector2i windowSize = Vector2i(600, 600);
+	int2 windowSize;
 
 	ParamLaunch() {
 		this->seed = time(NULL);
