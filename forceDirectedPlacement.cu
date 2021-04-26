@@ -178,17 +178,17 @@ void forceUpdate(float2* g_nodes, float2* g_displacement, int* g_adjMatrix)
 /// </summary>
 /// <param name="fdp">force directed placement context</param>
 /// <returns></returns>
-__global__
-void displaceUpdate(float2* g_nodes, float2* displacement)
-{
-
-	auto nNodes = c_parameters.numberOfNodes;
-	auto id = blockIdx.x * blockDim.x + threadIdx.x;
-	if (id >= nNodes) return;
-
-	auto node1 = g_nodes[id];
-	auto d = displacement[id];
-}
+//__global__
+//void displaceUpdate(float2* g_nodes, float2* displacement)
+//{
+//
+//	auto nNodes = c_parameters.numberOfNodes;
+//	auto id = blockIdx.x * blockDim.x + threadIdx.x;
+//	if (id >= nNodes) return;
+//
+//	auto node1 = g_nodes[id];
+//	auto d = displacement[id];
+//}
 
 /// <summary>
 /// Prints all node data
