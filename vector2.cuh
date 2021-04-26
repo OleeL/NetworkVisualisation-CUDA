@@ -6,7 +6,7 @@
 #include <device_functions.h>
 
 template <class T>
-class Vector2 {
+class Vector2  {
 
 public:
 	T x, y;
@@ -21,6 +21,18 @@ public:
 	/// Sets the vector to 0,0
 	/// </summary>
 	void reset(void);
+
+
+
+	/// <summary>
+	/// Divides self by a value
+	/// </summary>
+	template <typename T>
+	__inline__  __device__ __host__ inline Vector2<T>& operator=(T right)
+	{
+		x = right;
+		y = right;
+	}
 };
 
 /// <summary>

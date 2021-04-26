@@ -61,7 +61,7 @@
     <CudaCompile>
       <TargetMachinePlatform>64</TargetMachinePlatform>
       <Include>$(SolutionDir)Dependencies\GLFW\include;%(Include);</Include>
-      <GenerateRelocatableDeviceCode>false</GenerateRelocatableDeviceCode>
+      <AdditionalOptions>--verbose %(AdditionalOptions)</AdditionalOptions>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -83,13 +83,14 @@
     <CudaCompile>
       <TargetMachinePlatform>64</TargetMachinePlatform>
       <Include>$(SolutionDir)Dependencies\GLFW\include;%(Include);</Include>
-      <GenerateRelocatableDeviceCode>false</GenerateRelocatableDeviceCode>
+      <AdditionalOptions>--verbose %(AdditionalOptions)</AdditionalOptions>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <CudaCompile Include="draw.cu" />
     <CudaCompile Include="graph.cu" />
     <CudaCompile Include="forceDirectedPlacement.cu" />
+    <CudaCompile Include="helper_math.cuh" />
     <CudaCompile Include="main.cu" />
     <CudaCompile Include="nodeGeneration.cu" />
     <CudaCompile Include="startup.cu" />

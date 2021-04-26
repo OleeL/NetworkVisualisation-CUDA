@@ -1,0 +1,28 @@
+===================
+Nodes:  5000
+File:   .\Data\5000Nodes.txt
+Itera:  100000
+Size:   600x600
+Time taken: 1011854ms / 1011.854s / 16.8642333 minutes
+Almost. Fail
+===================
+Nodes:  1000
+File:   .\Data\1000Nodes.txt
+Itera:  60000
+Size:   600x600
+Time taken: 117599ms / 117.599s / 1.95998 minutes
+Success
+===================
+Nodes:  100
+File:   .\Data\RopeyGraph.txt
+Itera:  3000
+Size:   600x600
+Time taken: 684ms / 0.684s / 0.0114 minutes
+Success
+===================
+
+
+(190/3) * 100000 - (10000/3) = 6330000
+
+63.333333333333 * x – 3333.3333333333
+63.333333333333 * 1000 – 3333.3333333333 = 313333.333

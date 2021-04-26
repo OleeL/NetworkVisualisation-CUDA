@@ -78,7 +78,7 @@ void Window::key_callback_imp(GLFWwindow* window, int key, int scancode, int act
 		pollDraw = true;
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-		glTranslatef(position.x, position.y, 0.0f);
+		glTranslatef(static_cast<float>(position.x), static_cast<float>(position.y), 0.0f);
 		glScalef(scale, scale, 1.0f);
 
 		glViewport(0, 0, width, height);
@@ -122,7 +122,6 @@ Window::Window(const char* windowName, const int width, const int height) :
 	glMatrixMode(GL_MODELVIEW);
 	glClear(GL_COLOR_BUFFER_BIT);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 
 	position = Vector2i();
 	aspect = static_cast<float>(width) / height;

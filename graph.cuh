@@ -1,34 +1,24 @@
 ﻿#pragma once
-#include "vector2.cuh"
 
 /// <summary>
 /// Return a graph from the nodes generated.
 /// </summary>
 class Graph {
 public:
-	Vector2f* nodes;
-	Vector2f* displacement;  // stores x and y displacement for all nodes
-	Vector2i* edges;         // stores all of the edges
-	Vector2i* distinctEdges; // useful for drawing the nodes.
-
-	// index represents the nodes, value represents where edges end
-	// e.g.
-	// ...
-	// connectionIndex[2] = 13.
-	// connectionIndex[3] = 14. Connection will have (14 - 13) = 1 connections
-	// ...
-	unsigned int* connectionIndex;
+	float2* nodes;
+	float2* displacement;  // stores x and y displacement for all nodes
+	int2* distinctEdges; // useful for drawing the nodes.
+	int* adjacencyMatrix;  // adjacencyMatrix of edges
 	unsigned int numberOfNodes;
 	unsigned int numberOfEdges;
 	
 	Graph();
 
 	Graph(
-		Vector2f* nodes,
-		Vector2f* displacement,
-		Vector2i* edges,
-		Vector2i* distinctEdges,
-		unsigned int* connectionIndex,
+		float2* nodes,
+		float2* displacement,
+		int2* distinctEdges,
+		int* adjacencyMatrix,
 		unsigned int numberOfNodes,
 		unsigned int numberOfEdges
 	);
@@ -42,4 +32,6 @@ public:
 	/// Prints all nodes and connections (useful for debugging)
 	/// </summary>
 	void printNodesAndConnections();
+
+	void destroy();
 };

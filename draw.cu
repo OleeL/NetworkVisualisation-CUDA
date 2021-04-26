@@ -56,7 +56,7 @@ void setColour(GLfloat r, GLfloat g, GLfloat b, GLfloat a)
 
 Draw::Draw(char* title, int w, int h) : Window(title, w, h)
 {
-	pixels = malloc(width * height * 4.0f);
+	pixels = malloc(size_t(4 * width * height));
 };
 
 // Draws nodes and connections
