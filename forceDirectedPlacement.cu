@@ -218,7 +218,7 @@ void printData(ParamLaunch* args, ConstantDeviceParams dv, const float SPREADOFF
 /// <param name="iterations"></param>
 /// <param name="progress"></param>
 /// <param name="lastCaught"></param>
-inline void printProgressReport(int i, int iterations, int progress, int lastCaught)
+inline void printProgressReport(int& i, int& iterations, int& progress, int& lastCaught)
 {
 	progress = int(float(i) / float(iterations) * 100);
 	if (progress != lastCaught && progress % 10 == 0) {
