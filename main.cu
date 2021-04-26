@@ -3,10 +3,10 @@
 #include <device_launch_parameters.h>
 #include <iostream>
 #include <cstdlib>
-#include "startup.cuh"
-#include "nodeGeneration.cuh"
-#include "forceDirectedPlacement.cuh"
-#include "graph.cuh"
+#include "startup.cu"
+#include "nodeGeneration.cu"
+#include "forceDirectedPlacement.cu"
+#include "graph.cu"
 
 int main(int argc, char* argv[])
 {

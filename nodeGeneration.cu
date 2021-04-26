@@ -47,15 +47,14 @@ Graph* handleFile(char* fileName) {
 	auto f = float2();
 
 	// Looping through all nodes
-	for (unsigned int i = 0; i < nNodes; ++i)
+	for (auto i = 0; i < nNodes; ++i)
 	{
-		auto float2();
-		f.x = static_cast<float>(rand()) / RAND_MAX - 0.5f;
-		f.y = static_cast<float>(rand()) / RAND_MAX - 0.5f;
+		f.x = float(rand()) / RAND_MAX - 0.5f;
+		f.y = float(rand()) / RAND_MAX - 0.5f;
 		nodes[i] = f;
 	}
 	// Looping through all distinct edges
-	for (unsigned int i = 0; i < lines; ++i)
+	for (auto i = 0; i < lines; ++i)
 	{
 		file >> v.x >> v.y;
 		distinctEdges[i] = v;

@@ -2,7 +2,7 @@
 #include <sstream>
 #include <time.h>
 #include <fstream>
-#include "Startup.cuh"
+#include "startup.cuh"
 
 /// <summary>
 /// Converts a set of chars to an integer

@@ -48,36 +48,36 @@ ConstantDeviceParams c_parameters;
 
 // std::max doesn't handle floats
 template <typename T>
-inline __host__ __device__ __forceinline__
+__host__ __device__ __forceinline__
 T maxD(T a, T b) {
 	return (a > b) ? a : b;
 }
 
 // std::min doesn't handle floats
 template <class T>
-inline __host__ __device__ __forceinline__
+__host__ __device__ __forceinline__
 T minD(T a, T b) {
 	return (a < b) ? a : b;
 }
 
 // f_a(d) = d^2 / k
-inline __device__ __forceinline__
+__device__ __forceinline__
 float attractiveForce(float dist, int numberOfNodes, float spread) {
 	return dist * dist / spread / numberOfNodes;
 }
 
 // f_t = -k^2 / d
-inline __device__ __forceinline__
+__device__ __forceinline__
 float repulsiveForce(float dist, int numberOfNodes, float spread) {
 	return spread / dist / numberOfNodes / 100;
 }
 
-inline __device__ __forceinline__ int no_bank_conflict_index(int thread_id, int logical_index)
+__device__ __forceinline__ int no_bank_conflict_index(int thread_id, int logical_index)
 {
 	return logical_index * 64 + thread_id;
 }
 
-inline __device__ __forceinline__ int getSharedMemoryIndex(
+__device__ __forceinline__ int getSharedMemoryIndex(
 	unsigned int warpId,
 	unsigned int laneId,
 	unsigned int step,
@@ -220,7 +220,7 @@ void printData(ParamLaunch* args, ConstantDeviceParams dv, const float SPREADOFF
 /// <param name="lastCaught"></param>
 inline void printProgressReport(int i, int iterations, int progress, int lastCaught)
 {
-	progress = int(static_cast<float>(i) / static_cast<float>(iterations) * 100);
+	progress = int(float(i) / float(iterations) * 100);
 	if (progress != lastCaught && progress % 10 == 0) {
 		std::cout << "Progress: " << progress << "%" << std::endl;
 		lastCaught = progress;
@@ -247,7 +247,6 @@ void forceDirectedPlacement(ParamLaunch* args, Graph* graph)
 	// Putting memory to GPU constant memory
 	constexpr auto BLOCK_SIZE = 384;
 
-	//auto SPREADOFFSET = maxD((1.0f - (MIN_NUM * (args->iterations / args->numNodes))), float(0.25));
 	auto SPREADOFFSET = 0.2f;
 	ConstantDeviceParams data;
 	data.numberOfNodes = graph->numberOfNodes;
@@ -288,7 +287,7 @@ void forceDirectedPlacement(ParamLaunch* args, Graph* graph)
 	auto lastCaught = 0;
 	auto progress = 0;
 
-	for (auto i = 0; i < data.iterations; ++i)
+	for (auto i = 0; i < args->iterations; ++i)
 	{
 		printProgressReport(i, data.iterations, progress, lastCaught);
 		forceUpdate<<<gridDim, blockDim>>>(d_nodes, d_displacement, d_adjacencyMatrix);
