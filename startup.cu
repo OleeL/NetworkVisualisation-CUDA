@@ -20,7 +20,7 @@ int charToInt(char* str)
 /// Prints a default message for bad input
 /// </summary>
 /// <param name="param"></param>
-void PrintDefault(const ParamLaunch& param)
+void PrintDefault()
 {
 	std::cout << "Usage: fyp_cuda_nodes [fileName] [iterations]" << std::endl << std::endl;
 	exit(EXIT_FAILURE);
@@ -30,13 +30,13 @@ void PrintDefault(const ParamLaunch& param)
 // Takes the arguments passed into the program
 // Args: [int NumberOfNodes, int Seed (optional)]
 // Returns the seed and number of nodes to be handled.
-ParamLaunch handleArgs(int argc, char* argv[])
+ParamLaunch* handleArgs(int argc, char* argv[])
 {
-	auto DEFAULT_LAUNCHPARAM = ParamLaunch();
+	auto* DEFAULT_LAUNCHPARAM = new ParamLaunch();
 
 	// Checking number of args
 	if (argc < 3 || argc > 4) {
-		PrintDefault(DEFAULT_LAUNCHPARAM);
+		PrintDefault();
 		return DEFAULT_LAUNCHPARAM;
 	}
 	if (argc == 3) {
@@ -48,13 +48,13 @@ ParamLaunch handleArgs(int argc, char* argv[])
 			exit(EXIT_FAILURE);
 		}
 		file.close();
-		return ParamLaunch(argv[1], charToInt(argv[2]));
+		return new ParamLaunch(argv[1], charToInt(argv[2]));
 	}
 
 	// Nodes
 	auto nodes = charToInt(argv[1]);
 	if (nodes < 3) {
-		PrintDefault(DEFAULT_LAUNCHPARAM);
+		PrintDefault();
 		return DEFAULT_LAUNCHPARAM;
 	}
 
@@ -64,9 +64,9 @@ ParamLaunch handleArgs(int argc, char* argv[])
 	// Iterations
 	auto iterations = charToInt(argv[3]);
 	if (iterations < 0) {
-		PrintDefault(DEFAULT_LAUNCHPARAM);
+		PrintDefault();
 		return DEFAULT_LAUNCHPARAM;
 	}
 
-	return ParamLaunch(nodes, seed, iterations);
+	return new ParamLaunch(nodes, seed, iterations);
 }

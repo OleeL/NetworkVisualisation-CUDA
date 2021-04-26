@@ -4,7 +4,6 @@
 #include <iostream>
 #include "nodeGeneration.cuh"
 #include "graph.cuh"
-#include "vector2.cuh"
 
 inline void goToLine(std::ifstream& file, int line)
 {
@@ -27,13 +26,13 @@ inline void goToLine(std::ifstream& file, int line)
 // 1 0
 // 1 2
 // ...
-bool order(float2 &a, float2 &b)
+bool order(float2 a, float2 b)
 {
 	if (a.x < b.x) return true;
 	return (a.y < b.y && a.x == b.x);
 }
 
-Graph handleFile(char* fileName) {
+Graph* handleFile(char* fileName) {
 	unsigned int lines, nNodes;
 
 	std::ifstream file;
@@ -65,5 +64,5 @@ Graph handleFile(char* fileName) {
 	}
 	file.close();
 
-	return Graph(nodes, displacement, distinctEdges, adjacencyMatrix, nNodes, lines);
+	return new Graph(nodes, displacement, distinctEdges, adjacencyMatrix, nNodes, lines);
 }

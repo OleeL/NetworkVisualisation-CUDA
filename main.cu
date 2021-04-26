@@ -11,14 +11,16 @@
 int main(int argc, char* argv[])
 {
 	// Handling parameters
-	auto args = handleArgs(argc, argv);
+	ParamLaunch* args = handleArgs(argc, argv);
 
 	// Initialisation
-	auto graph = handleFile(args.fileName);
+	Graph* graph = handleFile(args->fileName);
 
 	// Running algorithm
 	forceDirectedPlacement(args, graph);
 
-	graph.destroy();
+	graph->destroy();
+	free(args);
+	free(graph);
 	return 0;
 }

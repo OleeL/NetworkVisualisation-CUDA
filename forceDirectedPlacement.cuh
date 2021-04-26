@@ -7,4 +7,4 @@
 /// </summary>
 /// <param name="args">Passed user provided parameters</param>
 /// <param name="graph">The force directed placement context to prevent huge args</param>
-void forceDirectedPlacement(ParamLaunch& args, Graph& graph);
+void forceDirectedPlacement(ParamLaunch* args, Graph* graph);

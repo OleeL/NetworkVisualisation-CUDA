@@ -14,7 +14,6 @@
 #include <iostream>
 
 #include "forceDirectedPlacement.cuh"
-#include "vector2.cuh"
 #include "startup.cuh"
 #include "graph.cuh"
 
@@ -63,13 +62,13 @@ T minD(T a, T b) {
 
 // f_a(d) = d^2 / k
 inline __device__ __forceinline__
-float attractiveForce(float& dist, int& numberOfNodes, float& spread) {
+float attractiveForce(float dist, int numberOfNodes, float spread) {
 	return dist * dist / spread / numberOfNodes;
 }
 
 // f_t = -k^2 / d
 inline __device__ __forceinline__
-float repulsiveForce(float& dist, int& numberOfNodes, float& spread) {
+float repulsiveForce(float dist, int numberOfNodes, float spread) {
 	return spread / dist / numberOfNodes / 100;
 }
 
@@ -195,15 +194,15 @@ void forceUpdate(float2* g_nodes, float2* g_displacement, int* g_adjMatrix)
 /// </summary>
 /// <param name="fdp">force directed placement args</param>
 /// <param name="args">user args passed in</param>
-void printData(ParamLaunch& args, ConstantDeviceParams& dv, const float& SPREADOFFSET)
+void printData(ParamLaunch* args, ConstantDeviceParams dv, const float SPREADOFFSET)
 {
 	std::cout << "===================" << std::endl;
 	std::cout << "Nodes:\t" << dv.numberOfNodes << std::endl;
-	if (args.fileName == NULL)
-		std::cout << "Seed:\t" << args.seed << std::endl;
+	if (args->fileName == NULL)
+		std::cout << "Seed:\t" << args->seed << std::endl;
 	else
-		std::cout << "File:\t" << args.fileName << std::endl;
-	std::cout << "Itera:\t" << args.iterations << std::endl;
+		std::cout << "File:\t" << args->fileName << std::endl;
+	std::cout << "Itera:\t" << args->iterations << std::endl;
 #if defined(DEBUG) || defined(_DEBUG)
 	std::cout << "Offset: " << SPREADOFFSET << std::endl;
 	std::cout << "Total spread:\t" << dv.spread << std::endl;
@@ -219,7 +218,7 @@ void printData(ParamLaunch& args, ConstantDeviceParams& dv, const float& SPREADO
 /// <param name="iterations"></param>
 /// <param name="progress"></param>
 /// <param name="lastCaught"></param>
-inline void printProgressReport(int& i, int& iterations, int& progress, int& lastCaught)
+inline void printProgressReport(int i, int iterations, int progress, int lastCaught)
 {
 	progress = int(static_cast<float>(i) / static_cast<float>(iterations) * 100);
 	if (progress != lastCaught && progress % 10 == 0) {
@@ -243,18 +242,18 @@ void printTimeTaken(T time)
 /// </summary>
 /// <param name="args">parameter launch args</param>
 /// <param name="graph">graph args</param>
-void forceDirectedPlacement(ParamLaunch& args, Graph& graph)
+void forceDirectedPlacement(ParamLaunch* args, Graph* graph)
 {
 	// Putting memory to GPU constant memory
 	constexpr auto BLOCK_SIZE = 384;
 
-	//auto SPREADOFFSET = maxD((1.0f - (MIN_NUM * (args.iterations / args.numNodes))), float(0.25));
+	//auto SPREADOFFSET = maxD((1.0f - (MIN_NUM * (args->iterations / args->numNodes))), float(0.25));
 	auto SPREADOFFSET = 0.2f;
 	ConstantDeviceParams data;
-	data.numberOfNodes = graph.numberOfNodes;
-	data.iterations = args.iterations;
-	data.scale = args.windowSize.x + args.windowSize.y;
-	data.spread = SPREADOFFSET * sqrtf(static_cast<float>(args.windowSize.x) * args.windowSize.y / graph.numberOfNodes);
+	data.numberOfNodes = graph->numberOfNodes;
+	data.iterations = args->iterations;
+	data.scale = args->windowSize.x + args->windowSize.y;
+	data.spread = SPREADOFFSET * sqrtf(static_cast<float>(args->windowSize.x) * args->windowSize.y / graph->numberOfNodes);
 	data.windowWidth = 600;
 	data.windowHeight = 600;
 
@@ -269,20 +268,20 @@ void forceDirectedPlacement(ParamLaunch& args, Graph& graph)
 
 	// Memory allocation. Takes the point of the pointer into cudaMalloc
 	// Allocating the number of nodes for the number of floats * 2.
-	cudaMalloc(&d_nodes, sizeof(float2) * graph.numberOfNodes);
-	cudaMalloc(&d_displacement, sizeof(float2) * graph.numberOfNodes);
-	cudaMalloc(&d_adjacencyMatrix, sizeof(int) * graph.numberOfNodes * graph.numberOfNodes);
+	cudaMalloc(&d_nodes, sizeof(float2) * graph->numberOfNodes);
+	cudaMalloc(&d_displacement, sizeof(float2) * graph->numberOfNodes);
+	cudaMalloc(&d_adjacencyMatrix, sizeof(int) * graph->numberOfNodes * graph->numberOfNodes);
 	gpuErrchk(cudaPeekAtLastError());
 
-	cudaMemcpy(d_nodes, graph.nodes, sizeof(float2) * graph.numberOfNodes, cudaMemcpyHostToDevice);
-	cudaMemcpy(d_displacement, graph.displacement, sizeof(float2) * graph.numberOfNodes, cudaMemcpyHostToDevice);
-	cudaMemcpy(d_adjacencyMatrix, graph.adjacencyMatrix, sizeof(int) * graph.numberOfNodes * graph.numberOfNodes, cudaMemcpyHostToDevice);
+	cudaMemcpy(d_nodes, graph->nodes, sizeof(float2) * graph->numberOfNodes, cudaMemcpyHostToDevice);
+	cudaMemcpy(d_displacement, graph->displacement, sizeof(float2) * graph->numberOfNodes, cudaMemcpyHostToDevice);
+	cudaMemcpy(d_adjacencyMatrix, graph->adjacencyMatrix, sizeof(int) * graph->numberOfNodes * graph->numberOfNodes, cudaMemcpyHostToDevice);
 	gpuErrchk(cudaPeekAtLastError());
 
-	auto block_size = std::min(BLOCK_SIZE, int(graph.numberOfNodes));
+	auto block_size = std::min(BLOCK_SIZE, int(graph->numberOfNodes));
 	block_size += ((32 - block_size % 32) % 32);
 	auto blockDim = dim3(block_size);
-	auto gridDim = dim3(minD(32, (block_size - 1 + int(graph.numberOfNodes)) / block_size));
+	auto gridDim = dim3(minD(32, (block_size - 1 + int(graph->numberOfNodes)) / block_size));
 
 	using namespace std::chrono;
 	auto start = steady_clock::now();
@@ -299,7 +298,7 @@ void forceDirectedPlacement(ParamLaunch& args, Graph& graph)
 
 	printTimeTaken(double(duration_cast<milliseconds>(steady_clock::now() - start).count()));
 
-	cudaMemcpy(graph.nodes, d_nodes, sizeof(float2) * graph.numberOfNodes, cudaMemcpyDeviceToHost);
+	cudaMemcpy(graph->nodes, d_nodes, sizeof(float2) * graph->numberOfNodes, cudaMemcpyDeviceToHost);
 	cudaFree(d_nodes);
 	cudaFree(d_displacement);
 	cudaFree(d_adjacencyMatrix);
