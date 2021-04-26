@@ -6,7 +6,7 @@
 #include <device_functions.h>
 
 template <class T>
-class Vector2 {
+class Vector2  {
 
 public:
 	T x, y;

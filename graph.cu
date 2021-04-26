@@ -11,10 +11,10 @@ Graph::Graph() {
 	this->numberOfEdges = 0;
 };
 
-Graph::Graph(Vector2f* nodes,
-	Vector2f* displacement,
-	Vector2i* distinctEdges,
-	bool* adjacencyMatrix,
+Graph::Graph(float2* nodes,
+	float2* displacement,
+	int2* distinctEdges,
+	int* adjacencyMatrix,
 	unsigned int numberOfNodes,
 	unsigned int numberOfEdges) :
 	nodes(nodes),

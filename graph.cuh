@@ -1,25 +1,24 @@
 ﻿#pragma once
-#include "vector2.cuh"
 
 /// <summary>
 /// Return a graph from the nodes generated.
 /// </summary>
 class Graph {
 public:
-	Vector2f* nodes;
-	Vector2f* displacement;  // stores x and y displacement for all nodes
-	Vector2i* distinctEdges; // useful for drawing the nodes.
-	bool* adjacencyMatrix;  // adjacencyMatrix of edges
+	float2* nodes;
+	float2* displacement;  // stores x and y displacement for all nodes
+	int2* distinctEdges; // useful for drawing the nodes.
+	int* adjacencyMatrix;  // adjacencyMatrix of edges
 	unsigned int numberOfNodes;
 	unsigned int numberOfEdges;
 	
 	Graph();
 
 	Graph(
-		Vector2f* nodes,
-		Vector2f* displacement,
-		Vector2i* distinctEdges,
-		bool* adjacencyMatrix,
+		float2* nodes,
+		float2* displacement,
+		int2* distinctEdges,
+		int* adjacencyMatrix,
 		unsigned int numberOfNodes,
 		unsigned int numberOfEdges
 	);

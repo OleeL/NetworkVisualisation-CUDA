@@ -27,7 +27,7 @@ inline void goToLine(std::ifstream& file, int line)
 // 1 0
 // 1 2
 // ...
-bool order(Vector2i &a, Vector2i &b)
+bool order(float2 &a, float2 &b)
 {
 	if (a.x < b.x) return true;
 	return (a.y < b.y && a.x == b.x);
@@ -40,31 +40,29 @@ Graph handleFile(char* fileName) {
 	file.open(fileName);
 	file >> nNodes >> lines;
 
-	auto nodes = new Vector2f[nNodes];
-	auto displacement = new Vector2f[nNodes]();
-	auto distinctEdges = new Vector2i[lines];
-	auto adjacencyMatrix = new bool[nNodes * nNodes]();
+	auto nodes = new float2[nNodes];
+	auto displacement = new float2[nNodes]();
+	auto distinctEdges = new int2[lines];
+	auto adjacencyMatrix = new int[int(nNodes * nNodes)]();
+	auto v = int2();
+	auto f = float2();
 
 	// Looping through all nodes
 	for (unsigned int i = 0; i < nNodes; ++i)
 	{
-		nodes[i] = Vector2f(
-			static_cast<float>(rand()) / RAND_MAX - 0.5f,
-			static_cast<float>(rand()) / RAND_MAX - 0.5f
-		);
+		auto float2();
+		f.x = static_cast<float>(rand()) / RAND_MAX - 0.5f;
+		f.y = static_cast<float>(rand()) / RAND_MAX - 0.5f;
+		nodes[i] = f;
 	}
+	// Looping through all distinct edges
+	for (unsigned int i = 0; i < lines; ++i)
 	{
-		auto v = Vector2i();
-		// Looping through all distinct edges
-		for (unsigned int i = 0; i < lines; ++i)
-		{
-			file >> v.x >> v.y;
-			distinctEdges[i] = v;
-			adjacencyMatrix[v.x * nNodes + v.y] = true;
-			adjacencyMatrix[v.y * nNodes + v.x] = true;
-		}
+		file >> v.x >> v.y;
+		distinctEdges[i] = v;
+		adjacencyMatrix[v.x * nNodes + v.y] = 1;
+		adjacencyMatrix[v.y * nNodes + v.x] = 1;
 	}
-
 	file.close();
 
 	return Graph(nodes, displacement, distinctEdges, adjacencyMatrix, nNodes, lines);
