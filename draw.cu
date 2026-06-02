@@ -90,24 +90,52 @@ inline void drawTestFrame(int x1, int y1, int& x2, int& y2)
 	drawLine(x1, y1, x2, y1);
 };
 
+void Draw::fitCameraToGraph(Graph& graph)
+{
+	if (graph.numberOfNodes == 0) {
+		resetCamera();
+		return;
+	}
+
+	auto minX = graph.nodes[0].x;
+	auto maxX = graph.nodes[0].x;
+	auto minY = graph.nodes[0].y;
+	auto maxY = graph.nodes[0].y;
+
+	for (unsigned int i = 1; i < graph.numberOfNodes; ++i) {
+		minX = std::min(minX, graph.nodes[i].x);
+		maxX = std::max(maxX, graph.nodes[i].x);
+		minY = std::min(minY, graph.nodes[i].y);
+		maxY = std::max(maxY, graph.nodes[i].y);
+	}
+
+	auto graphWidth = std::max(maxX - minX, 1.0f);
+	auto graphHeight = std::max(maxY - minY, 1.0f);
+	auto fitScale = 0.82f * std::min(static_cast<float>(width) / graphWidth, static_cast<float>(height) / graphHeight);
+	auto centre = Vector2f((minX + maxX) * 0.5f, (minY + maxY) * 0.5f);
+	std::cout << "Camera fit bounds: " << graphWidth << "x" << graphHeight << std::endl;
+	std::cout << "Camera fit scale: " << fitScale << std::endl;
+	setCamera(Vector2f(-centre.x * fitScale, -centre.y * fitScale), fitScale);
+}
+
 void Draw::redraw(Graph& graph) {
 	pollDraw = false;
-	glClearColor(0.0, 0.0, 0.0, 1.0);  //clear screen by white pixel
+	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
-
 	drawNodes(graph);
-	glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 }
 
 void Draw::draw(Graph& graph)
 {
-	drawNodes(graph);
-	glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+	if (window == nullptr) {
+		std::cerr << "Viewer window is unavailable; skipping draw loop." << std::endl;
+		return;
+	}
+
+	fitCameraToGraph(graph);
 	while (!glfwWindowShouldClose(window))
 	{
-		if (pollDraw) redraw(graph);
-		glClear(GL_COLOR_BUFFER_BIT);
-		glDrawPixels(width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+		redraw(graph);
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
