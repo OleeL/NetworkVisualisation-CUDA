@@ -16,12 +16,13 @@ int main(int argc, char* argv[])
 
 	// Initialisation
 	auto graph = handleFile(args.fileName);
+	auto windowSize = args.windowSize;
 
 	// Running algorithm
 	forceDirectedPlacement(args, graph);
 
 	// Setting up window
-	auto draw = new Draw((char*) "GPU Implementation", args.windowSize.x, args.windowSize.y);
+	auto draw = new Draw((char*) "GPU Implementation", windowSize.x, windowSize.y);
 	draw->draw(graph);
 
 	// Cleanup

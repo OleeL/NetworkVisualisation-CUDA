@@ -2,6 +2,7 @@
 #include <sstream>
 #include <time.h>
 #include <fstream>
+#include <cstring>
 #include "Startup.cuh"
 
 /// <summary>
@@ -22,7 +23,16 @@ int charToInt(char* str)
 /// <param name="param"></param>
 void PrintDefault(const ParamLaunch& param)
 {
-	std::cout << "Usage: fyp_cuda_nodes [fileName] [iterations]" << std::endl << std::endl;
+	std::cout << "Usage: fyp_cuda_nodes [fileName] [iterations] [exact|grid|hybrid]" << std::endl << std::endl;
+	exit(EXIT_FAILURE);
+}
+
+int parseRepulsionMode(char* mode)
+{
+	if (mode == nullptr || strcmp(mode, "exact") == 0) return REPULSION_EXACT;
+	if (strcmp(mode, "grid") == 0) return REPULSION_GRID;
+	if (strcmp(mode, "hybrid") == 0) return REPULSION_HYBRID;
+	std::cout << "Unknown repulsion mode: " << mode << std::endl;
 	exit(EXIT_FAILURE);
 }
 
@@ -35,20 +45,22 @@ ParamLaunch handleArgs(int argc, char* argv[])
 	auto DEFAULT_LAUNCHPARAM = ParamLaunch();
 
 	// Checking number of args
-	if (argc < 3 || argc > 4) {
+	if (argc < 3 || argc > 5) {
 		PrintDefault(DEFAULT_LAUNCHPARAM);
 		return DEFAULT_LAUNCHPARAM;
 	}
-	if (argc == 3) {
-		std::ifstream file;
-		file.open(argv[1]);
-		if (!file.good()) {
-			file.close();
-			std::cout << "bad file / file does not exist";
-			exit(EXIT_FAILURE);
-		}
+
+	std::ifstream file;
+	file.open(argv[1]);
+	if (file.good()) {
 		file.close();
-		return ParamLaunch(argv[1], charToInt(argv[2]));
+		return ParamLaunch(argv[1], charToInt(argv[2]), parseRepulsionMode(argc >= 4 ? argv[3] : nullptr));
+	}
+	file.close();
+
+	if (argc < 4) {
+		std::cout << "bad file / file does not exist";
+		exit(EXIT_FAILURE);
 	}
 
 	// Nodes
@@ -68,5 +80,5 @@ ParamLaunch handleArgs(int argc, char* argv[])
 		return DEFAULT_LAUNCHPARAM;
 	}
 
-	return ParamLaunch(nodes, seed, iterations);
+	return ParamLaunch(nodes, seed, iterations, parseRepulsionMode(argc >= 5 ? argv[4] : nullptr));
 }

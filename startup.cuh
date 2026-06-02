@@ -2,6 +2,12 @@
 #include <time.h>
 #include "vector2.cu"
 
+enum RepulsionMode {
+	REPULSION_EXACT = 0,
+	REPULSION_GRID = 1,
+	REPULSION_HYBRID = 2
+};
+
 class ParamLaunch {
 public:
 	static const int DEFAULT_NODES = 10;
@@ -12,24 +18,26 @@ public:
 	char* fileName = nullptr;
 	long long int seed = 0;
 	int iterations = 100;
+	int repulsionMode = REPULSION_EXACT;
 
 	// Try to keep size W * H
-	Vector2i windowSize = Vector2i(600, 600);
+	Vector2i windowSize;
 
-	ParamLaunch() {
-		this->seed = time(NULL);
-	};
-	ParamLaunch(char* fileName, int iterations, int nodes)
+	ParamLaunch()
+		: seed(time(NULL)),
+		windowSize(600, 600) {};
+
+	ParamLaunch(char* fileName, int iterations, int repulsionMode = REPULSION_EXACT)
 		:fileName(fileName),
 		iterations(iterations),
-		numNodes(nodes) {};
-	ParamLaunch(char* fileName, int iterations)
-		:fileName(fileName),
-		iterations(iterations) {};
-	ParamLaunch(int nodes, long int s, int iterations)
+		repulsionMode(repulsionMode),
+		windowSize(600, 600) {};
+	ParamLaunch(int nodes, long int s, int iterations, int repulsionMode = REPULSION_EXACT)
 		:numNodes(nodes),
 		seed(s),
-		iterations(iterations) {};
+		iterations(iterations),
+		repulsionMode(repulsionMode),
+		windowSize(600, 600) {};
 };
 
 // Takes the arguments passed into the program
