@@ -96,7 +96,7 @@ inline __device__ __forceinline__ int getSharedMemoryIndex(
 /// <param name="displacement">the displacement of nodes</param>
 /// <param name="adjacency matrix">stores the edges</param>
 __global__
-void forceUpdate(float2* g_nodes, float2* g_displacement, int* g_adjMatrix)
+void forceUpdate(float2* g_nodes, float2* g_displacement, int* g_adjMatrix, float temperature)
 {
 	// Basic necessities
 	auto nNodes = c_parameters.numberOfNodes;
@@ -119,7 +119,6 @@ void forceUpdate(float2* g_nodes, float2* g_displacement, int* g_adjMatrix)
 	auto warpWidth = static_cast<int>(ceilf(nNodes / static_cast<float>(warpSize)));
 
 	// Math based
-	auto scale = c_parameters.scale;
 	auto windowWidth = c_parameters.windowWidth;
 	auto windowHeight = c_parameters.windowHeight;
 	auto spread = c_parameters.spread;
@@ -164,8 +163,12 @@ void forceUpdate(float2* g_nodes, float2* g_displacement, int* g_adjMatrix)
 
 	__syncthreads();
 
-	node1.x += (dist > scale) ? d.x / dist * scale : d.x,
-		node1.y += (dist > scale) ? d.y / dist * scale : d.y;
+	auto displacementLength = length(d);
+	if (displacementLength > 0.0f) {
+		auto step = fminf(displacementLength, temperature);
+		node1 += d / displacementLength * step;
+	}
+
 	node1.x = fminf(windowWidth * 0.5f, fmaxf(-windowWidth * 0.5f, node1.x)),
 		node1.y = fminf(windowHeight * 0.5f, fmaxf(-windowHeight * 0.5f, node1.y));
 
@@ -288,11 +291,14 @@ void forceDirectedPlacement(ParamLaunch& args, Graph& graph)
 	auto start = steady_clock::now();
 	auto lastCaught = 0;
 	auto progress = 0;
+	auto initialTemperature = static_cast<float>(std::min(args.windowSize.x, args.windowSize.y)) * 0.1f;
 
 	for (auto i = 0; i < data.iterations; ++i)
 	{
 		printProgressReport(i, data.iterations, progress, lastCaught);
-		forceUpdate<<<gridDim, blockDim>>>(d_nodes, d_displacement, d_adjacencyMatrix);
+		auto coolingProgress = static_cast<float>(i) / static_cast<float>(data.iterations);
+		auto temperature = fmaxf(initialTemperature * (1.0f - coolingProgress), 0.01f);
+		forceUpdate<<<gridDim, blockDim>>>(d_nodes, d_displacement, d_adjacencyMatrix, temperature);
 		gpuErrchk(cudaPeekAtLastError());
 		gpuErrchk(cudaDeviceSynchronize());
 	}
